@@ -151,6 +151,80 @@ public class Commands implements CommandExecutor  {
 			}
 		}); 
 		
+		
+		
+		commands.put("invite", new MyCommand(){
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+            	
+				if(arguments.length == 1){
+            		sender.sendMessage("Please specify a player!");
+            		return; 
+            	}
+            	
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(user.BoardRank != Rank.Admin || user.BoardRank != Rank.Mod){
+            		sender.sendMessage("You are not a board admin or mod!");
+            		return; 
+            	}
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+            	
+            	Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		return; 
+            	}
+            	
+            	String otherPlayerName = arguments[1]; 
+            	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+            	board.InvitedMembers.add(otherPlayer.getUniqueId());
+
+        		sender.sendMessage(String.format("Invited %s to your /%s/", otherPlayerName, user.BoardName));
+        		otherPlayer.sendMessage(String.format("You've been invited to /%s/ by %s! Do /b join %s to accept!", user.BoardName, otherPlayerName, user.BoardName));
+			}
+		}); 
+		
+		commands.put("join", new MyCommand(){
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				if(arguments.length == 1){
+            		sender.sendMessage("Please specify a board!");
+            		return; 
+            	}
+            	
+				UUID playerId = player.getUniqueId(); 
+            	User user = User.FromUUID(playerId); 
+            	
+            	if(user.HasBoard()){
+            		sender.sendMessage("Leave your current board with /b leave first!");
+            		return; 
+            	}
+            	
+            	String boardName = arguments[1]; 
+            	Board board = Board.FromName(boardName);
+            	
+            	if(board == null){
+            		sender.sendMessage("Board not found?!");
+            		return; 
+            	}
+            	
+            	if(!board.Open && !board.InvitedMembers.contains(playerId)){
+            		sender.sendMessage("You have not been invited to this board!");
+            		return;
+            	}
+            	
+            	board.InvitedMembers.remove(playerId); 
+            	board.Members.add(playerId); 
+        		sender.sendMessage(String.format("Successfully joined /%s/!", user.BoardName));
+			}
+		}); 
+		
 		commands.put("saveall", new MyCommand(){
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {

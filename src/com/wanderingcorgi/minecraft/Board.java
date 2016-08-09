@@ -17,6 +17,7 @@ public class Board implements Serializable {
 	public List<UUID> Members; 
 	public List<UUID> Admins; 
 	public List<UUID> Mods; 
+	public List<UUID> InvitedMembers; 
 	public boolean Open; 
 	
 	@Override
