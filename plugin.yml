@@ -2,15 +2,11 @@ name: 4craft
 version: 0.01
 main: com.wanderingcorgi.minecraft.Main
 commands:
-   nf:
+   b:
       description: This is the base command
-      usage: /nf
+      usage: /b
       permission-message: You don't have <permission>
    f:
       description: This is the base command alternative
-      usage: /nf
-      permission-message: You don't have <permission>
-   sf:
-      description: This is the base command
-      usage: /nf
+      usage: /b
       permission-message: You don't have <permission>

@@ -17,6 +17,7 @@ public class Main extends JavaPlugin{
 
 		// setup event listener 
 		BlockListener blockEvents = new BlockListener(this);
+		PlayerListener playerEvents = new PlayerListener(this);
 		
 		// Load from DB 
 		try{
@@ -28,6 +29,11 @@ public class Main extends JavaPlugin{
 			Bukkit.getConsoleSender().sendMessage(RelationColor.Enemy + "[4craft: Error loading from DB!]");	
 			e.printStackTrace();
 		}
+		
+		// setup command listener
+		Commands cmd = new Commands(this); 
+		Bukkit.getPluginCommand("b").setExecutor(cmd);
+		Bukkit.getPluginCommand("f").setExecutor(cmd);
 		
 		// save database on loop / new thread 
 		databaseThread = new DataBaseThread();
