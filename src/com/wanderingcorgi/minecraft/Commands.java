@@ -151,8 +151,6 @@ public class Commands implements CommandExecutor  {
 			}
 		}); 
 		
-		
-		
 		commands.put("invite", new MyCommand(){
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
@@ -164,7 +162,7 @@ public class Commands implements CommandExecutor  {
             	
             	User user = User.FromUUID(player.getUniqueId()); 
             	
-            	if(user.BoardRank != Rank.Admin || user.BoardRank != Rank.Mod){
+            	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
             		sender.sendMessage("You are not a board admin or mod!");
             		return; 
             	}
@@ -182,7 +180,19 @@ public class Commands implements CommandExecutor  {
             	}
             	
             	String otherPlayerName = arguments[1]; 
+            	
             	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+            	
+            	if(otherPlayer == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		return; 
+            	}
+            	
+            	if(otherPlayer.getUniqueId() == player.getUniqueId()){
+            		sender.sendMessage("You cannot invite yourself!");
+            		return; 
+            	}
+            	
             	board.InvitedMembers.add(otherPlayer.getUniqueId());
 
         		sender.sendMessage(String.format("Invited %s to your /%s/", otherPlayerName, user.BoardName));
