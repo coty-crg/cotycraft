@@ -21,6 +21,7 @@ public class Memory {
 
 	// <location of block, durability of that block> 
 	protected static HashMap<LocationSerializable, Integer> Universe = new HashMap<LocationSerializable, Integer>(); 
+	protected static HashMap<LocationSerializable, UUID> Beds = new HashMap<LocationSerializable, UUID>(); 
 	protected static HashMap<String, Board> Boards = new HashMap<String, Board>(); 
 	protected static HashMap<UUID, User> Users = new HashMap<UUID, User>(); 
 	
@@ -60,6 +61,7 @@ public class Memory {
 		LoadWorldData();
 		LoadBoardsData(); 
 		LoadUserData(); 
+		LoadBedData(); 
 		// PrintOutDB(); 
 	}
 
@@ -68,6 +70,15 @@ public class Memory {
 		FileInputStream fileIn = new FileInputStream(Main.dataFolder + "/saves/Universe.sav");
         ObjectInputStream in = new ObjectInputStream(fileIn);
         Universe = ( HashMap<LocationSerializable, Integer> ) in.readObject();
+        in.close();
+        fileIn.close();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void LoadBedData() throws IOException, ClassNotFoundException{
+		FileInputStream fileIn = new FileInputStream(Main.dataFolder + "/saves/Beds.sav");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        Beds = ( HashMap<LocationSerializable, UUID> ) in.readObject();
         in.close();
         fileIn.close();
 	}
@@ -103,12 +114,21 @@ public class Memory {
 		SaveWorldData();
 		SaveBoardData(); 
 		SaveUserData(); 
+		SaveBedData(); 
 	}
 	
 	public static void SaveWorldData() throws IOException{
 		FileOutputStream fileOut = new FileOutputStream(Main.dataFolder + "/saves/Universe.sav");
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(Universe);
+        out.close();
+        fileOut.close();
+	}
+	
+	public static void SaveBedData() throws IOException{
+		FileOutputStream fileOut = new FileOutputStream(Main.dataFolder + "/saves/Beds.sav");
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(Beds);
         out.close();
         fileOut.close();
 	}

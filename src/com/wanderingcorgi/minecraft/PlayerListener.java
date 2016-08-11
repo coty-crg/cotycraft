@@ -4,10 +4,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import com.wanderingcorgi.minecraft.User.Chat;
@@ -78,5 +80,26 @@ public class PlayerListener implements Listener {
 		}
 
 		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void OnBedEnterEvent(PlayerBedEnterEvent event){
+		Location bedLocation = event.getBed().getLocation(); 
+		LocationSerializable ls = new LocationSerializable(bedLocation); 
+		UUID bedOwner = Memory.Beds.get(ls);
+		
+		Player player = event.getPlayer(); 
+		UUID playerId = player.getUniqueId(); 
+		
+		if(bedOwner != null && bedOwner != playerId){
+			player.sendMessage("This bed belongs to somebody else!");
+			event.setCancelled(true);
+			return;
+		}
+		
+		if(bedOwner == null){
+			Memory.Beds.put(ls, playerId); 
+			player.sendMessage("Claimed bed!");
+		}
 	}
 }

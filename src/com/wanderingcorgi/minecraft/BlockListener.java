@@ -1,6 +1,7 @@
 package com.wanderingcorgi.minecraft;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -50,7 +51,15 @@ public class BlockListener implements Listener {
 		event.getPlayer().sendMessage("durability: " + Memory.GetDurability(block));
 		
 		boolean actuallyBreak = Memory.BlockBroken(block, 1);
-		if(actuallyBreak) return; 
+		if(actuallyBreak) {
+			if(block.getType() != Material.BED_BLOCK)
+				return; 
+
+			Location bedLocation = block.getLocation(); 
+			LocationSerializable ls = new LocationSerializable(bedLocation); 
+			Memory.Beds.remove(ls); 
+			return; 
+		}
 		
 		event.setCancelled(true);
 	}
