@@ -39,6 +39,7 @@ public class PlayerListener implements Listener {
 	private String AdminPrefix = "**";
 	private String ModPrefix = "*"; 
 	private String NormiePrefix = ""; 
+	private String ChatFormat = "%s%s%s/%s/ (%s): %s"; 
 	
 	@EventHandler
 	public void AsyncPlayerChatEvent(AsyncPlayerChatEvent event){
@@ -52,9 +53,12 @@ public class PlayerListener implements Listener {
 		
 		//loop through everyone on the server, to set appropriate colors and decide whether or not they can hear it
 		Set<Player> listeners = event.getRecipients();
+		boolean displayFactionPrefix = false; 
 		for(Player listener : listeners){
 			User listenUser = User.FromUUID(listener.getUniqueId()); 
-			boolean displayFactionPrefix = false; 
+			
+			// faction chat? 
+			displayFactionPrefix = false; 
 			if(user.ChatMode == Chat.Board){
 				if(!user.BoardName.equals(listenUser.BoardName))
 					continue; 
@@ -62,13 +66,14 @@ public class PlayerListener implements Listener {
 				displayFactionPrefix = true; 
 			}
 			
-			String message = String.format("%s%s%s/%s/ (%s): %s", 
+			String message = String.format(ChatFormat, 
 							user.BoardRank == Rank.Admin ? AdminPrefix : NormiePrefix,
 							user.BoardRank == Rank.Mod ? ModPrefix : NormiePrefix, 
 							displayFactionPrefix ? BoardChatPrefix : NormiePrefix,
 							board.Name, 
 							playerName, 
-							event.getMessage()); // "(" + user.getPlayer().getName() + "): " + event.getMessage();
+							event.getMessage());
+			
 			listener.sendMessage(message);
 		}
 
