@@ -102,6 +102,20 @@ public class Commands implements CommandExecutor  {
 			}
 		});
 		
+		commands.put("bed",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+            	Location bedSpawn = player.getBedSpawnLocation(); 
+            	if(bedSpawn == null){
+            		sender.sendMessage("You do not have a bed! Was it destroyed?");
+            		return; 
+            	}
+            	
+            	player.teleport(bedSpawn); 
+        		sender.sendMessage("Teleported to your bed!");
+			}
+		});
+		
 		commands.put("home",  new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
