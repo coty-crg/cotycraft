@@ -9,6 +9,8 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -69,6 +71,66 @@ public class Commands implements CommandExecutor  {
             	sender.sendMessage(String.format("You are now leader of /%s/!", newBoard.Name));
             }
         });
+		
+		commands.put("sethome",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+        		
+            	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
+            		sender.sendMessage("You are not the owner or a mod!");
+            		return; 
+            	}
+            	
+            	Set<Material> IgnoreBlocks = null; 
+            	Block targetBlock = player.getTargetBlock(IgnoreBlocks, 10);
+            	
+            	if(targetBlock.getType() != Material.BED_BLOCK){
+            		sender.sendMessage("This is not a bed!!");
+            		return; 
+            	}
+            	
+            	Board board = Board.FromName(user.BoardName); 
+            	board.Home = new LocationSerializable(targetBlock.getLocation()); 
+        		sender.sendMessage("This bed is now your board's home!");
+			}
+		});
+		
+		commands.put("home",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+            	
+            	Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board.Home == null){
+            		sender.sendMessage("Your board doesn't have a home!");
+            		return; 
+            	}
+            	
+            	Block block = player.getWorld().getBlockAt((int) board.Home.X, (int) board.Home.Y, (int) board.Home.Z); 
+            	
+            	if(block.getType() != Material.BED_BLOCK){
+            		sender.sendMessage("Your board's home has been destroyed!!");
+            		return; 
+            	}
+            	
+            	player.teleport(LocationSerializable.FromLoctionSerializable(board.Home)); 
+        		sender.sendMessage("Teleported to your board's home!");
+			}
+		});
 		
 		commands.put("chat",  new MyCommand() {
 			@Override

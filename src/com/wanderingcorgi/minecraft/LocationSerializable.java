@@ -3,6 +3,7 @@ package com.wanderingcorgi.minecraft;
 import java.io.Serializable;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -72,5 +73,9 @@ public class LocationSerializable implements Serializable  {
 		X = location.getX();  
 		Y = location.getY();  
 		Z = location.getZ(); 
+	}
+	
+	public static Location FromLoctionSerializable(LocationSerializable ls){
+		return new Location(Bukkit.getWorld(ls.WorldId), ls.X, ls.Y, ls.Z); 
 	}
 }
