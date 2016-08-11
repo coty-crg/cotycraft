@@ -12,13 +12,13 @@ public class Board implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	public String Name;
-	public LocationSerializable Home; 
-	public List<UUID> Members; 
-	public List<UUID> Admins; 
-	public List<UUID> Mods; 
-	public List<UUID> InvitedMembers; 
-	public boolean Open; 
+	public String Name = "";
+	public LocationSerializable Home = null; 
+	public List<UUID> Members = new ArrayList<UUID>(); 
+	public List<UUID> Admins = new ArrayList<UUID>(); 
+	public List<UUID> Mods = new ArrayList<UUID>(); 
+	public List<UUID> InvitedMembers = new ArrayList<UUID>(); 
+	public boolean Open = false; 
 	
 	@Override
 	public int hashCode() {

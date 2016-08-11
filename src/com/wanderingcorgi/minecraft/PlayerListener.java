@@ -10,6 +10,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import com.wanderingcorgi.minecraft.User.Chat;
+import com.wanderingcorgi.minecraft.User.Rank;
+
 
 public class PlayerListener implements Listener {
 
@@ -31,6 +34,11 @@ public class PlayerListener implements Listener {
 	    User user = new User(playerId);
 	    Memory.Users.put(playerId, user); 
 	}
+
+	private String BoardChatPrefix = String.format("%s(board)", RelationColor.Self); 
+	private String AdminPrefix = "**";
+	private String ModPrefix = "*"; 
+	private String NormiePrefix = ""; 
 	
 	@EventHandler
 	public void AsyncPlayerChatEvent(AsyncPlayerChatEvent event){
@@ -45,7 +53,22 @@ public class PlayerListener implements Listener {
 		//loop through everyone on the server, to set appropriate colors and decide whether or not they can hear it
 		Set<Player> listeners = event.getRecipients();
 		for(Player listener : listeners){
-			String message = String.format("/%s/ (%s): %s", board.Name, playerName, event.getMessage()); // "(" + user.getPlayer().getName() + "): " + event.getMessage();
+			User listenUser = User.FromUUID(listener.getUniqueId()); 
+			boolean displayFactionPrefix = false; 
+			if(user.ChatMode == Chat.Board){
+				if(!user.BoardName.equals(listenUser.BoardName))
+					continue; 
+				
+				displayFactionPrefix = true; 
+			}
+			
+			String message = String.format("%s%s%s/%s/ (%s): %s", 
+							user.BoardRank == Rank.Admin ? AdminPrefix : NormiePrefix,
+							user.BoardRank == Rank.Mod ? ModPrefix : NormiePrefix, 
+							displayFactionPrefix ? BoardChatPrefix : NormiePrefix,
+							board.Name, 
+							playerName, 
+							event.getMessage()); // "(" + user.getPlayer().getName() + "): " + event.getMessage();
 			listener.sendMessage(message);
 		}
 

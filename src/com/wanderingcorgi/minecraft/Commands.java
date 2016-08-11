@@ -14,6 +14,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.wanderingcorgi.minecraft.User.Chat;
 import com.wanderingcorgi.minecraft.User.Rank;
 
 interface MyCommand {
@@ -68,6 +69,292 @@ public class Commands implements CommandExecutor  {
             	sender.sendMessage(String.format("You are now leader of /%s/!", newBoard.Name));
             }
         });
+		
+		commands.put("chat",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		user.ChatMode = Chat.Global; 
+            		return; 
+            	}
+        		
+            	if(user.ChatMode == Chat.Global){
+            		user.ChatMode = Chat.Board; 
+            		sender.sendMessage("Now in board-only chat.");
+            		return; 
+            	}
+            	
+            	if(user.ChatMode == Chat.Board){
+
+            		user.ChatMode = Chat.Global; 
+            		sender.sendMessage("Now in Global chat.");
+            		return; 
+            	}
+
+			}
+		});
+		
+		commands.put("admin",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+
+				if(arguments.length == 1){
+            		sender.sendMessage("Please specify a player!");
+            		return; 
+            	}
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+            	
+        		Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		return; 
+            	}
+            	
+            	if(user.BoardRank != Rank.Admin){
+            		sender.sendMessage(String.format("You are not admin of /%s/!", board.Name));
+            		return; 
+            	}
+
+            	String otherPlayerName = arguments[1]; 
+            	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+            	
+            	if(otherPlayer == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		return; 
+            	}
+            	
+            	if(otherPlayer.getUniqueId() == player.getUniqueId()){
+            		sender.sendMessage("You cannot admin yourself!");
+            		return; 
+            	}
+            	
+            	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
+            	
+            	if(!otherUser.BoardName.equals(user.BoardName)){
+            		sender.sendMessage("You are not in the same board!");
+            		return; 
+            	}
+            	
+            	if(otherUser.BoardRank == Rank.Admin){
+            		sender.sendMessage("You cannot admin the board owner!");
+            		return; 
+            	}
+
+            	otherUser.BoardRank = Rank.Admin;
+            	board.Mods.remove(otherUser.Id); 
+            	board.Admins.add(otherUser.Id);
+
+            	user.BoardRank = Rank.Mod; 
+            	board.Mods.add(user.Id); 
+            	board.Admins.remove(user.Id);
+
+        		sender.sendMessage(String.format("Successfully passed admin to %s! You are now a mod.", otherPlayerName));
+            	otherPlayer.sendMessage(String.format("You've been promoted to admin of /%s/ by %s!", user.BoardName, player.getDisplayName()));
+			}
+		});
+		
+		commands.put("demote",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+
+				if(arguments.length == 1){
+            		sender.sendMessage("Please specify a player!");
+            		return; 
+            	}
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+            	
+        		Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		return; 
+            	}
+            	
+            	if(user.BoardRank != Rank.Admin){
+            		sender.sendMessage(String.format("You are not admin of /%s/!", board.Name));
+            		return; 
+            	}
+
+            	String otherPlayerName = arguments[1]; 
+            	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+            	
+            	if(otherPlayer == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		return; 
+            	}
+            	
+            	if(otherPlayer.getUniqueId() == player.getUniqueId()){
+            		sender.sendMessage("You cannot promote yourself!");
+            		return; 
+            	}
+            	
+            	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
+            	
+            	if(!otherUser.BoardName.equals(user.BoardName)){
+            		sender.sendMessage("You are not in the same board!");
+            		return; 
+            	}
+            	
+            	if(otherUser.BoardRank == Rank.Admin){
+            		sender.sendMessage("You cannot demote the board owner!");
+            		return; 
+            	}
+            	
+            	board.Mods.remove(otherUser.Id);
+            	otherUser.BoardRank = Rank.Normie; 
+
+        		sender.sendMessage(String.format("Successfully demoted %s!", otherPlayerName));
+            	otherPlayer.sendMessage(String.format("You've been demoted to normie of /%s/ by %s!", user.BoardName, player.getDisplayName()));
+			}
+		});
+		
+		commands.put("promote",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+
+				if(arguments.length == 1){
+            		sender.sendMessage("Please specify a player!");
+            		return; 
+            	}
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+            	
+        		Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		return; 
+            	}
+            	
+            	if(user.BoardRank != Rank.Admin){
+            		sender.sendMessage(String.format("You are not admin of /%s/!", board.Name));
+            		return; 
+            	}
+
+            	String otherPlayerName = arguments[1]; 
+            	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+            	
+            	if(otherPlayer == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		return; 
+            	}
+            	
+            	if(otherPlayer.getUniqueId() == player.getUniqueId()){
+            		sender.sendMessage("You cannot promote yourself!");
+            		return; 
+            	}
+            	
+            	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
+            	
+            	if(!otherUser.BoardName.equals(user.BoardName)){
+            		sender.sendMessage("You are not in the same board!");
+            		return; 
+            	}
+            	
+            	if(otherUser.BoardRank == Rank.Admin){
+            		sender.sendMessage("You cannot promote the board owner!");
+            		return; 
+            	}
+            	
+            	board.Mods.add(otherUser.Id);
+            	otherUser.BoardRank = Rank.Mod; 
+
+        		sender.sendMessage(String.format("Successfully promoted %s!", otherPlayerName));
+            	otherPlayer.sendMessage(String.format("You've been promoted to mod of /%s/ by %s!", user.BoardName, player.getDisplayName()));
+			}
+		});
+		
+		commands.put("kick",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+
+				if(arguments.length == 1){
+            		sender.sendMessage("Please specify a player!");
+            		return; 
+            	}
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+            	
+        		Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		return; 
+            	}
+            	
+            	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
+            		sender.sendMessage(String.format("You are not a mod or admin of /%s/!", board.Name));
+            		return; 
+            	}
+
+            	String otherPlayerName = arguments[1]; 
+            	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+            	
+            	if(otherPlayer == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		return; 
+            	}
+            	
+            	if(otherPlayer.getUniqueId() == player.getUniqueId()){
+            		sender.sendMessage("You cannot invite yourself!");
+            		return; 
+            	}
+            	
+            	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
+            	
+            	if(!otherUser.BoardName.equals(user.BoardName)){
+            		sender.sendMessage("You are not in the same board!");
+            		return; 
+            	}
+            	
+            	if(otherUser.BoardRank == Rank.Admin){
+            		sender.sendMessage("You cannot kick the board owner!");
+            		return; 
+            	}
+            	
+            	if(otherUser.BoardRank == Rank.Mod && user.BoardRank == Rank.Mod){
+            		sender.sendMessage("Only the board owner can remove other mods!");
+            		return; 
+            	}
+            	
+            	board.Members.remove(otherUser.Id); 
+            	board.Admins.remove(otherUser.Id); 
+            	board.Mods.remove(otherUser.Id);
+            	
+            	otherUser.BoardName = null; 
+            	otherUser.BoardRank = Rank.Normie; 
+
+        		sender.sendMessage(String.format("Successfully kicked %s!", otherPlayerName));
+            	otherPlayer.sendMessage(String.format("You've been kicked from /%s/ by %s!", user.BoardName, player.getDisplayName()));
+			}
+		});
 		
 		commands.put("leave", new MyCommand(){
 			@Override
@@ -196,7 +483,7 @@ public class Commands implements CommandExecutor  {
             	board.InvitedMembers.add(otherPlayer.getUniqueId());
 
         		sender.sendMessage(String.format("Invited %s to your /%s/", otherPlayerName, user.BoardName));
-        		otherPlayer.sendMessage(String.format("You've been invited to /%s/ by %s! Do /b join %s to accept!", user.BoardName, otherPlayerName, user.BoardName));
+        		otherPlayer.sendMessage(String.format("You've been invited to /%s/ by %s! Do /b join %s to accept!", user.BoardName, player.getDisplayName(), user.BoardName));
 			}
 		}); 
 		
@@ -231,6 +518,10 @@ public class Commands implements CommandExecutor  {
             	
             	board.InvitedMembers.remove(playerId); 
             	board.Members.add(playerId); 
+            	
+            	user.BoardName = board.Name; 
+            	user.BoardRank = Rank.Normie; 
+            	
         		sender.sendMessage(String.format("Successfully joined /%s/!", user.BoardName));
 			}
 		}); 

@@ -13,14 +13,19 @@ public class User implements Serializable {
 		Normie, Mod, Admin
 	}
 	
+	public enum Chat {
+		Global, Board
+	}
+	
 	public LocationSerializable Home; 
 	public UUID Id; 
 	public String BoardName; 
 	public Rank BoardRank; 
+	public Chat ChatMode; 
 	
 	public User(UUID id){
 		this.Id = id;
-		BoardName = null; 
+		ChatMode = Chat.Global; 
 		BoardRank = Rank.Normie; 
 		Home = null; 
 	}
