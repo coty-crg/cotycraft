@@ -59,8 +59,8 @@ public class PlayerListener implements Listener {
 			
 			// faction chat? 
 			displayFactionPrefix = false; 
-			if(user.ChatMode == Chat.Board){
-				if(!user.BoardName.equals(listenUser.BoardName))
+			if(user.HasBoard() && user.ChatMode == Chat.Board){
+				if(!listenUser.HasBoard() || !user.BoardName.equals(listenUser.BoardName))
 					continue; 
 				
 				displayFactionPrefix = true; 
