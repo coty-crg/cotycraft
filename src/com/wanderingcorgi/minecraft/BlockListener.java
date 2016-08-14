@@ -50,6 +50,10 @@ public class BlockListener implements Listener {
 				return; 
 			}
 		}
+		
+		for(Block block : blocks){
+			Memory.Universe.remove(block); 
+		}
 	}
 	
 	@EventHandler
@@ -65,6 +69,10 @@ public class BlockListener implements Listener {
 				event.setCancelled(true);
 				return; 
 			}
+		}
+		
+		for(Block block : blocks){
+			Memory.Universe.remove(block); 
 		}
 	}
 	
