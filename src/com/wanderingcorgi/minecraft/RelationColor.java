@@ -13,7 +13,7 @@ public class RelationColor {
 	public static String Enemy = "§c";
 	
 	public static String FromRelation(Relation relation){
-
+		
 		if(relation == Relation.Faction) return Faction; 
 		if(relation == Relation.Ally) return Ally; 
 		if(relation == Relation.Enemy) return Enemy; 
