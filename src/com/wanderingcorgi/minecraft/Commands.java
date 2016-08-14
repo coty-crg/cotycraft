@@ -72,9 +72,14 @@ public class Commands implements CommandExecutor  {
             }
         });
 		
-		commands.put("ally",  new MyCommand() {
+		commands.put("enemy",  new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+				if(arguments.length == 1){
+            		sender.sendMessage("Please specify a board! Don't include //s");
+            		return; 
+            	}
 				
             	User user = User.FromUUID(player.getUniqueId()); 
             	
@@ -82,13 +87,81 @@ public class Commands implements CommandExecutor  {
             		sender.sendMessage("You are not in a board!");
             		return; 
             	}
-        		
-            	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
-            		sender.sendMessage("You are not the owner or a mod!");
+            	
+        		Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
+            	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
+            		sender.sendMessage(String.format("You are not a mod or admin of /%s/!", board.Name));
+            		return; 
+            	}
+
+            	String otherFactionName = arguments[1]; 
+            	Board otherBoard = Board.FromName(otherFactionName); 
             	
+            	boolean alreadyEnemies = otherBoard.Enemies.contains(board.Name); 
+            	if(alreadyEnemies){
+            		sender.sendMessage(String.format("You are already enemies with /%s/!", otherFactionName));
+            		return; 
+            	}
+            	
+            	board.Enemies.add(otherFactionName); 
+            	board.Allies.remove(otherFactionName); 
+            	otherBoard.Enemies.add(board.Name); 
+            	otherBoard.Allies.remove(board.Name); 
+            	
+            	board.MessageMembers(String.format("%s has notified /%s/ that you are now enemies!", player.getDisplayName(), otherFactionName));
+            	otherBoard.MessageMembers(String.format("/%s/ has declared war! They are now your enemy.", board.Name));
+			}
+		});
+		
+		commands.put("ally",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+				if(arguments.length == 1){
+            		sender.sendMessage("Please specify a board! Don't include //s");
+            		return; 
+            	}
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+            	
+        		Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		return; 
+            	}
+            	
+            	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
+            		sender.sendMessage(String.format("You are not a mod or admin of /%s/!", board.Name));
+            		return; 
+            	}
+
+            	String otherFactionName = arguments[1]; 
+            	Board otherBoard = Board.FromName(otherFactionName); 
+            	
+            	board.Allies.add(otherFactionName); 
+            	board.Enemies.remove(otherFactionName); 
+
+            	boolean alreadyAllies = otherBoard.Allies.contains(board.Name); 
+            	if(alreadyAllies){
+                	board.MessageMembers(String.format("%s has accepted /%s/'s alliance request!", player.getDisplayName(), otherFactionName));
+                	otherBoard.MessageMembers(String.format("/%s/ has accepted your alliance request!", board.Name));
+            		return; 
+            	}
+            	
+            	board.MessageMembers(String.format("%s has sent an ally request to /%s/!", player.getDisplayName(), otherFactionName));
+            	otherBoard.MessageMembers(String.format("/%s/ has sent an ally request! Do /b ally to accept!", board.Name));
 			}
 		});
 		

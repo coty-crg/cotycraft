@@ -1,25 +1,22 @@
 package com.wanderingcorgi.minecraft;
 
+import com.wanderingcorgi.minecraft.User.Relation;
+
 public class RelationColor {
 
+	// public static String Truce = "§e"; 
+	// public static String War = "§4";
+	// public static String Peaceful = "§6";
 	public static String Neutral = "§f";
-	public static String Enemy = "§c";
+	public static String Faction = "§a"; 
 	public static String Ally = "§d"; 
-	public static String Truce = "§e";
-
-	public static String War = "§4";
-	public static String Peaceful = "§6";
-	public static String Self = "§a"; 
+	public static String Enemy = "§c";
 	
-	public static String getRelColor(String relation){
+	public static String FromRelation(Relation relation){
 
-		if(relation.equals(Relation.Self)) return Self; 
-		if(relation.equals(Relation.Neutral)) return Neutral; 
-		if(relation.equals(Relation.Enemy)) return Enemy; 
-		if(relation.equals(Relation.Ally)) return Ally; 
-		if(relation.equals(Relation.Truce)) return Truce; 
-		if(relation.equals(Relation.War)) return War; 
-		if(relation.equals(Relation.Peaceful)) return Peaceful; 
+		if(relation == Relation.Faction) return Faction; 
+		if(relation == Relation.Ally) return Ally; 
+		if(relation == Relation.Enemy) return Enemy; 
 		
 		return Neutral; 
 	}

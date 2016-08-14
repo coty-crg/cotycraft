@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import com.wanderingcorgi.minecraft.User.Rank;
 
 public class Board implements Serializable { 
 
@@ -98,4 +101,28 @@ public class Board implements Serializable {
 		Memory.Boards.put(name, board);
 		return board; 
 	}
+	
+	public void MessageMembers(String message){
+		for(UUID memberId : Members){
+			Player player = Bukkit.getPlayer(memberId);
+			if(player == null) continue; 
+			player.sendMessage(message);
+		}
+	}
+	
+	public void MessageAdminsAndMods(String message){
+		for(UUID memberId : Mods){
+			Player player = Bukkit.getPlayer(memberId);
+			if(player == null) continue; 
+			player.sendMessage(message);
+		}
+		
+		for(UUID memberId : Admins){
+			Player player = Bukkit.getPlayer(memberId);
+			if(player == null) continue; 
+			player.sendMessage(message);
+		}
+	}
+	
+
 }

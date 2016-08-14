@@ -17,6 +17,13 @@ public class User implements Serializable {
 		Global, Board
 	}
 	
+	public enum Relation {
+		Neutral, 
+		Faction,
+		Ally, 
+		Enemy
+	}
+	
 	public LocationSerializable Home; 
 	public UUID Id; 
 	public String BoardName; 
@@ -46,6 +53,26 @@ public class User implements Serializable {
 		return Memory.Users.get(id); 
 	}
 
+	public Relation GetRelation(User otherUser){
+		
+		if(BoardName == null || BoardName.equals("") || otherUser.BoardName == null || otherUser.BoardName.equals(""))
+			return Relation.Neutral;
+		
+		if(BoardName.equals(otherUser.BoardName))
+			return Relation.Faction; 
+		
+		Board ourBoard = Board.FromName(BoardName); 
+		Board otherBoard = Board.FromName(otherUser.BoardName); 
+		
+		if(ourBoard.Allies.contains(otherUser.BoardName) && otherBoard.Allies.contains(ourBoard.Name))
+			return Relation.Ally; 
+		
+		if(ourBoard.Enemies.contains(otherUser.BoardName) || otherBoard.Enemies.contains(ourBoard.Name))
+			return Relation.Enemy; 
+		
+		return Relation.Neutral; 
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

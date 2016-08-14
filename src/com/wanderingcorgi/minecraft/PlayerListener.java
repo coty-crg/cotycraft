@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.wanderingcorgi.minecraft.User.Chat;
 import com.wanderingcorgi.minecraft.User.Rank;
+import com.wanderingcorgi.minecraft.User.Relation;
 
 
 public class PlayerListener implements Listener {
@@ -58,11 +59,10 @@ public class PlayerListener implements Listener {
 	    Memory.Users.put(playerId, user); 
 	}
 
-	private String BoardChatPrefix = String.format("%s(board)", RelationColor.Self); 
+	private String BoardChatPrefix = String.format(" %s[board] ", RelationColor.Faction); 
 	private String AdminPrefix = "**";
 	private String ModPrefix = "*"; 
 	private String NormiePrefix = ""; 
-	private String ChatFormat = "%s%s%s/%s/ (%s): %s"; 
 	
 	@EventHandler
 	public void AsyncPlayerChatEvent(AsyncPlayerChatEvent event){
@@ -80,6 +80,9 @@ public class PlayerListener implements Listener {
 		for(Player listener : listeners){
 			User listenUser = User.FromUUID(listener.getUniqueId()); 
 			
+			Relation relation = listenUser.GetRelation(user);  
+			String relationColor = RelationColor.FromRelation(relation); 
+			
 			// faction chat? 
 			displayFactionPrefix = false; 
 			if(user.HasBoard() && user.ChatMode == Chat.Board){
@@ -89,11 +92,14 @@ public class PlayerListener implements Listener {
 				displayFactionPrefix = true; 
 			}
 			
-			String message = String.format(ChatFormat, 
+			// color [rank stars] /board/ (color name): message 
+			String message = String.format("%s%s%s%s/%s/ §b(%s%s§b)§f: %s",
+							displayFactionPrefix ? BoardChatPrefix : NormiePrefix,
+							relationColor,
 							user.BoardRank == Rank.Admin ? AdminPrefix : NormiePrefix,
 							user.BoardRank == Rank.Mod ? ModPrefix : NormiePrefix, 
-							displayFactionPrefix ? BoardChatPrefix : NormiePrefix,
 							board.Name, 
+							relationColor,
 							playerName, 
 							event.getMessage());
 			

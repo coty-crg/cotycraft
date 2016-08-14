@@ -12,7 +12,7 @@ public class Main extends JavaPlugin{
 	private DataBaseThread databaseThread; 
 	
 	public void onEnable(){
-		Bukkit.getConsoleSender().sendMessage(RelationColor.Self + "[Starting 4craft plugin]");
+		Bukkit.getConsoleSender().sendMessage(RelationColor.Faction + "[Starting 4craft plugin]");
 		dataFolder = getDataFolder().toString(); 
 
 		// setup event listener 
@@ -41,11 +41,11 @@ public class Main extends JavaPlugin{
 	}
 	
 	public void onDisable(){
-		Bukkit.getConsoleSender().sendMessage(RelationColor.Self + "[Stopping 4craft plugin]");
+		Bukkit.getConsoleSender().sendMessage(RelationColor.Faction + "[Stopping 4craft plugin]");
 		databaseThread.interrupt(); 
         try {
 			Memory.SaveToDB();
-			Bukkit.getConsoleSender().sendMessage(RelationColor.Self + "[4craft: Successfully saving DB!]");	
+			Bukkit.getConsoleSender().sendMessage(RelationColor.Faction + "[4craft: Successfully saving DB!]");	
 		} catch (IOException e) {
 			Bukkit.getConsoleSender().sendMessage(RelationColor.Enemy + "[4craft: Error saving DB!]");	
 			e.printStackTrace();
@@ -62,11 +62,11 @@ public class Main extends JavaPlugin{
 			        AmSaving = false; 
 				} catch (InterruptedException e) {
 					Bukkit.getConsoleSender().sendMessage(RelationColor.Enemy + "[4craft: Error saving DB!]");	
-					Bukkit.getConsoleSender().sendMessage(RelationColor.Self + "Shutdown autosave thread.. ");
+					Bukkit.getConsoleSender().sendMessage(RelationColor.Enemy + "Shutdown autosave thread.. ");
 					e.printStackTrace();
 				} catch (Exception e){
 					Bukkit.getConsoleSender().sendMessage(RelationColor.Enemy + "[4craft: Error saving DB!]");
-					Bukkit.getConsoleSender().sendMessage(RelationColor.Self + "Uncaught exception saving database.. ");
+					Bukkit.getConsoleSender().sendMessage(RelationColor.Enemy + "Uncaught exception saving database.. ");
 					e.printStackTrace();
 				}
 	        }
