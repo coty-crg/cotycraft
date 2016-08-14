@@ -478,7 +478,7 @@ public class Commands implements CommandExecutor  {
             	}
             	
             	if(otherPlayer.getUniqueId() == player.getUniqueId()){
-            		sender.sendMessage("§cYou cannot promote yourself!");
+            		sender.sendMessage("§cYou cannot demote yourself!");
             		return; 
             	}
             	
