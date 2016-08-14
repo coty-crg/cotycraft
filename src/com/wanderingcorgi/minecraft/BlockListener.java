@@ -121,7 +121,7 @@ public class BlockListener implements Listener {
         
         if (action == Action.LEFT_CLICK_BLOCK) {
         	ItemStack itemInHand = player.getItemInHand();
-        	if(itemInHand == null || Tools.contains(itemInHand.getType()))
+        	if(itemInHand == null || Tools.contains(itemInHand.getType()) || block.getType() == Material.AIR)
         		return; 
         	
         	int worth = Memory.MaterialValues.getOrDefault(itemInHand.getType(), 0); 
