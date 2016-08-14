@@ -52,11 +52,15 @@ public class PlayerListener implements Listener {
 	    Player player = event.getPlayer();
 	    UUID playerId = player.getUniqueId();
 	    
-	    if(Memory.Users.containsKey(playerId)) 
-	    	return; 
+	    if(!Memory.Users.containsKey(playerId)){
+	    	User user = new User(playerId);
+	    	Memory.Users.put(playerId, user); 	    
+	    	return;
+	    } 
 
-	    User user = new User(playerId);
-	    Memory.Users.put(playerId, user); 
+	    User user = User.FromUUID(playerId); 
+	    if(user.HasBoard())
+	    	player.setPlayerListName( String.format("/%s/%s", user.BoardName, player.getDisplayName()) );
 	}
 
 	private String BoardChatPrefix = String.format(" %s[board] ", RelationColor.Faction); 

@@ -99,13 +99,23 @@ public class Commands implements CommandExecutor  {
             		sender.sendMessage(String.format("You are not a mod or admin of /%s/!", board.Name));
             		return; 
             	}
-
+            	
             	String otherFactionName = arguments[1]; 
             	Board otherBoard = Board.FromName(otherFactionName); 
+            	
+            	if(otherBoard == null){
+            		sender.sendMessage("That faction doesn't exist!");
+            		return; 
+            	}
             	
             	boolean alreadyEnemies = otherBoard.Enemies.contains(board.Name); 
             	if(alreadyEnemies){
             		sender.sendMessage(String.format("You are already enemies with /%s/!", otherFactionName));
+            		return; 
+            	}
+            	
+            	if(user.BoardName.equals(otherFactionName)){
+            		sender.sendMessage(String.format("You cannot be in a relationship with yourself!"));
             		return; 
             	}
             	
@@ -150,11 +160,27 @@ public class Commands implements CommandExecutor  {
             	String otherFactionName = arguments[1]; 
             	Board otherBoard = Board.FromName(otherFactionName); 
             	
+            	if(otherBoard == null){
+            		sender.sendMessage("That faction doesn't exist!");
+            		return; 
+            	}
+            	
+            	boolean alreadyAllies = otherBoard.Allies.contains(board.Name); 
+            	if(alreadyAllies){
+                	sender.sendMessage(String.format("Your faction is already in an alliance with /%s/", otherFactionName));
+            		return; 
+            	}
+            	
+            	if(user.BoardName.equals(otherFactionName)){
+            		sender.sendMessage(String.format("You cannot be in a relationship with yourself!"));
+            		return; 
+            	}
+            	
             	board.Allies.add(otherFactionName); 
             	board.Enemies.remove(otherFactionName); 
 
-            	boolean alreadyAllies = otherBoard.Allies.contains(board.Name); 
-            	if(alreadyAllies){
+            	boolean acceptingAllyRequest = otherBoard.Allies.contains(board.Name); 
+            	if(acceptingAllyRequest){
                 	board.MessageMembers(String.format("%s has accepted /%s/'s alliance request!", player.getDisplayName(), otherFactionName));
                 	otherBoard.MessageMembers(String.format("/%s/ has accepted your alliance request!", board.Name));
             		return; 
