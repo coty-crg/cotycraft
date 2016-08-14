@@ -193,7 +193,7 @@ public class BlockListener implements Listener {
 		}
 
 		if(durabilityLeft > 1)
-			event.getPlayer().sendMessage(String.format("§7[durability]: %s", durabilityLeft));
+			event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft));
 		
 		boolean actuallyBreak = Memory.BlockBroken(block, 1);
 		if(actuallyBreak) 
