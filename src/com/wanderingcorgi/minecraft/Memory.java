@@ -75,14 +75,25 @@ public class Memory {
 	public static final int MaxDurabilityUntilExplosionsRequired = 640; 
 	
 	public static int GetDurability(Block block){
-		LocationSerializable ls = new LocationSerializable(block); 
-    	boolean exists = Memory.Universe.containsKey(ls); 
-    	Integer durability = exists ? Memory.Universe.get(ls) : 0;
+		Block targetBlock = block; 
+		Block blockBelow = block.getRelative(BlockFace.DOWN);
+		if(BlockListener.IsDoor(targetBlock.getType()) && BlockListener.IsDoor(blockBelow.getType())){
+			targetBlock = blockBelow; 
+		}
+		
+		LocationSerializable ls = new LocationSerializable(targetBlock);
+    	Integer durability = Memory.Universe.getOrDefault(ls, 0);
     	return durability.intValue(); 
 	}
 	
 	public static void SetDurability(Block block, int value){
-		LocationSerializable ls = new LocationSerializable(block.getLocation()); 
+		Block targetBlock = block; 
+		Block blockBelow = block.getRelative(BlockFace.DOWN);
+		if(BlockListener.IsDoor(targetBlock.getType()) && BlockListener.IsDoor(blockBelow.getType())){
+			targetBlock = blockBelow; 
+		}
+		
+		LocationSerializable ls = new LocationSerializable(targetBlock); 
 		Memory.Universe.put(ls, value); 
 	}
 	
@@ -136,6 +147,13 @@ public class Memory {
 		if(BlockListener.IsDoor(blockType)){
 			LocationSerializable ls = new LocationSerializable(block.getLocation()); 
 			Memory.Doors.remove(ls);
+
+			Location top = block.getLocation(); 
+			Block bottomBlock = top.getWorld().getBlockAt((int) top.getX(),(int) top.getY() - 1,(int) top.getZ());
+			if(BlockListener.IsDoor(bottomBlock.getType())){
+				LocationSerializable ls2 = new LocationSerializable(bottomBlock.getLocation()); 
+				Memory.Doors.remove(ls2);
+			}
 		}
 		
 		return true;

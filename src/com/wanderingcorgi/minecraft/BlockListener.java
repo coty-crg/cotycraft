@@ -160,10 +160,7 @@ public class BlockListener implements Listener {
         	}
         		
         	User user = User.FromUUID(player.getUniqueId()); 
-        	if(user == null || user.BoardName == null)
-        		return; 
-        	
-        	if(!user.BoardName.equals(doorBoardOwner)){
+        	if(user == null || user.BoardName == null || !user.BoardName.equals(doorBoardOwner)){
         		player.sendMessage(String.format("/%s/ owns this door! You must destroy it to pass.", doorBoardOwner));
         		event.setCancelled(true);
         		return; 
@@ -216,30 +213,141 @@ public class BlockListener implements Listener {
 		event.setCancelled(true);
 	}
 
-	@EventHandler
+	/*@EventHandler
 	public void onBlockExplodeEvent(BlockExplodeEvent event){
+
+		Bukkit.getConsoleSender().sendMessage("test2");
+		Block blockCenter = event.getBlock(); 
+		List<Block> blockList = Arrays.asList(
+				blockCenter,
+				blockCenter.getRelative(BlockFace.UP),
+				blockCenter.getRelative(BlockFace.DOWN),
+				blockCenter.getRelative(BlockFace.EAST),
+				blockCenter.getRelative(BlockFace.EAST_NORTH_EAST),
+				blockCenter.getRelative(BlockFace.EAST_SOUTH_EAST),
+				blockCenter.getRelative(BlockFace.NORTH),
+				blockCenter.getRelative(BlockFace.NORTH_EAST),
+				blockCenter.getRelative(BlockFace.NORTH_NORTH_EAST),
+				blockCenter.getRelative(BlockFace.NORTH_NORTH_WEST),
+				blockCenter.getRelative(BlockFace.NORTH_WEST),
+				blockCenter.getRelative(BlockFace.WEST),
+				blockCenter.getRelative(BlockFace.WEST_NORTH_WEST),
+				blockCenter.getRelative(BlockFace.WEST_SOUTH_WEST),
+				blockCenter.getRelative(BlockFace.SOUTH),
+				blockCenter.getRelative(BlockFace.SOUTH_EAST),
+				blockCenter.getRelative(BlockFace.SOUTH_SOUTH_EAST),
+				blockCenter.getRelative(BlockFace.SOUTH_SOUTH_WEST),
+				blockCenter.getRelative(BlockFace.SOUTH_WEST)); 
+		
+		for(Block block : blockList){
+			if(event.blockList().contains( block )) continue;
+			Bukkit.getConsoleSender().sendMessage("checking " + block.getLocation().toString() + ", " + block.getType().toString()); 
+			Memory.BlockBroken(block, 10);
+		}
+		
 		List<Block> originalList = new ArrayList<Block>(event.blockList()); 
 		for(Block block : originalList){
-
 			boolean actuallyBreak = Memory.BlockBroken(block, 10);
 			if(actuallyBreak)
 				continue; 
 			
 			event.blockList().remove(block); 
 		}
-	}
+	}*/
 	
 	@EventHandler
 	public void onEntityExplodeEvent(EntityExplodeEvent event){
 		boolean isTNT = event.getEntityType() == EntityType.PRIMED_TNT || event.getEntityType() == EntityType.MINECART_TNT; 
 		int damage = isTNT ? 10 : 5; 
+		
+		Block blockCenter = event.getLocation().getWorld().getBlockAt(event.getLocation()); 
+		List<Block> blockList = Arrays.asList(
+				blockCenter,
+				blockCenter.getRelative(BlockFace.UP),
+				blockCenter.getRelative(BlockFace.DOWN),
+				blockCenter.getRelative(BlockFace.EAST),
+				blockCenter.getRelative(BlockFace.EAST_NORTH_EAST),
+				blockCenter.getRelative(BlockFace.EAST_SOUTH_EAST),
+				blockCenter.getRelative(BlockFace.NORTH),
+				blockCenter.getRelative(BlockFace.NORTH_EAST),
+				blockCenter.getRelative(BlockFace.NORTH_NORTH_EAST),
+				blockCenter.getRelative(BlockFace.NORTH_NORTH_WEST),
+				blockCenter.getRelative(BlockFace.NORTH_WEST),
+				blockCenter.getRelative(BlockFace.WEST),
+				blockCenter.getRelative(BlockFace.WEST_NORTH_WEST),
+				blockCenter.getRelative(BlockFace.WEST_SOUTH_WEST),
+				blockCenter.getRelative(BlockFace.SOUTH),
+				blockCenter.getRelative(BlockFace.SOUTH_EAST),
+				blockCenter.getRelative(BlockFace.SOUTH_SOUTH_EAST),
+				blockCenter.getRelative(BlockFace.SOUTH_SOUTH_WEST),
+				blockCenter.getRelative(BlockFace.SOUTH_WEST)
+				);
+				
+		Block bottom = blockCenter.getRelative(BlockFace.DOWN); 
+		List<Block> blockListBottom = Arrays.asList(
+				blockCenter,
+				bottom.getRelative(BlockFace.EAST),
+				bottom.getRelative(BlockFace.EAST_NORTH_EAST),
+				bottom.getRelative(BlockFace.EAST_SOUTH_EAST),
+				bottom.getRelative(BlockFace.NORTH),
+				bottom.getRelative(BlockFace.NORTH_EAST),
+				bottom.getRelative(BlockFace.NORTH_NORTH_EAST),
+				bottom.getRelative(BlockFace.NORTH_NORTH_WEST),
+				bottom.getRelative(BlockFace.NORTH_WEST),
+				bottom.getRelative(BlockFace.WEST),
+				bottom.getRelative(BlockFace.WEST_NORTH_WEST),
+				bottom.getRelative(BlockFace.WEST_SOUTH_WEST),
+				bottom.getRelative(BlockFace.SOUTH),
+				bottom.getRelative(BlockFace.SOUTH_EAST),
+				bottom.getRelative(BlockFace.SOUTH_SOUTH_EAST),
+				bottom.getRelative(BlockFace.SOUTH_SOUTH_WEST),
+				bottom.getRelative(BlockFace.SOUTH_WEST)
+				);
+		
+		
+		Block top = blockCenter.getRelative(BlockFace.UP); 
+		List<Block> blockListTop = Arrays.asList(
+				blockCenter,
+				top.getRelative(BlockFace.EAST),
+				top.getRelative(BlockFace.EAST_NORTH_EAST),
+				top.getRelative(BlockFace.EAST_SOUTH_EAST),
+				top.getRelative(BlockFace.NORTH),
+				top.getRelative(BlockFace.NORTH_EAST),
+				top.getRelative(BlockFace.NORTH_NORTH_EAST),
+				top.getRelative(BlockFace.NORTH_NORTH_WEST),
+				top.getRelative(BlockFace.NORTH_WEST),
+				top.getRelative(BlockFace.WEST),
+				top.getRelative(BlockFace.WEST_NORTH_WEST),
+				top.getRelative(BlockFace.WEST_SOUTH_WEST),
+				top.getRelative(BlockFace.SOUTH),
+				top.getRelative(BlockFace.SOUTH_EAST),
+				top.getRelative(BlockFace.SOUTH_SOUTH_EAST),
+				top.getRelative(BlockFace.SOUTH_SOUTH_WEST),
+				top.getRelative(BlockFace.SOUTH_WEST)
+				);
+		
+		for(Block block : blockList){
+			if(event.blockList().contains( block )) continue;
+			Memory.BlockBroken(block, damage);
+		}
+
+		for(Block block : blockListTop){
+			if(event.blockList().contains( block )) continue;
+			Memory.BlockBroken(block, damage);
+		}
+		
+		for(Block block : blockListBottom){
+			if(event.blockList().contains( block )) continue;
+			Memory.BlockBroken(block, damage);
+		}
+		
 		List<Block> originalList = new ArrayList<Block>(event.blockList()); 
 		for(Block block : originalList){
-
 			boolean actuallyBreak = Memory.BlockBroken(block, damage);
 			if(actuallyBreak)
 				continue; 
 			
+			Bukkit.getConsoleSender().sendMessage(String.format("Removing %s", block.getLocation().toString()));
 			event.blockList().remove(block); 
 		}
 	}

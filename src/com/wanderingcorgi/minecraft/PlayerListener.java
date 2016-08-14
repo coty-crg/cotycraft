@@ -31,7 +31,7 @@ public class PlayerListener implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 	
-	@EventHandler 
+	/*@EventHandler 
 	public void OnBukkitEvent(PlayerBucketEvent event){
 		Block block = event.getBlockClicked();
 		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
@@ -45,7 +45,7 @@ public class PlayerListener implements Listener {
 			
 			return; 
 		}
-	}
+	}*/
 	
 	@EventHandler
 	public void OnPlayerTeleportEvent(PlayerTeleportEvent event){
