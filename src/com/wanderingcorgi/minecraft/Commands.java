@@ -44,7 +44,7 @@ public class Commands implements CommandExecutor  {
 			@Override
             public void run(CommandSender sender, Player player, String[] arguments) {
             	if(arguments.length == 1){
-            		sender.sendMessage("Please specify a board name");
+            		sender.sendMessage("§cPlease specify a board name");
             		return; 
             	}
             	
@@ -52,18 +52,18 @@ public class Commands implements CommandExecutor  {
             	boolean exists = Board.FromName(name) != null;
             	
             	if(name.length() > 5){
-            		sender.sendMessage("That board name is too long! 5 characters max!");
+            		sender.sendMessage("§cThat board name is too long! 5 characters max!");
             		return; 
             	}
             	
             	if(exists){
-            		sender.sendMessage(String.format("The board /%s/ already exists!", name));
+            		sender.sendMessage(String.format("§cThe board /%s/ already exists!", name));
             		return; 
             	}
 
             	User user = User.FromUUID(player.getUniqueId()); 
             	if(user.HasBoard()){
-            		sender.sendMessage(String.format("You must leave /%s/ before creating a new board!", user.BoardName));
+            		sender.sendMessage(String.format("§cYou must leave /%s/ before creating a new board!", user.BoardName));
             		return; 
             	}
             	
@@ -91,14 +91,14 @@ public class Commands implements CommandExecutor  {
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
         		Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
@@ -108,7 +108,7 @@ public class Commands implements CommandExecutor  {
             	Board otherBoard = Board.FromName(otherFactionName); 
             	
             	if(otherBoard == null){
-            		sender.sendMessage("This board does not exist!");
+            		sender.sendMessage("§cThis board does not exist!");
             		return; 
             	}
             	
@@ -153,26 +153,26 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
 				if(arguments.length == 1){
-            		sender.sendMessage("Please specify a board! Don't include //s");
+            		sender.sendMessage("§cPlease specify a board! Don't include //s");
             		return; 
             	}
 				
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
         		Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
             	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
-            		sender.sendMessage(String.format("You are not a mod or admin of /%s/!", board.Name));
+            		sender.sendMessage(String.format("§cYou are not a mod or admin of /%s/!", board.Name));
             		return; 
             	}
             	
@@ -180,18 +180,18 @@ public class Commands implements CommandExecutor  {
             	Board otherBoard = Board.FromName(otherFactionName); 
             	
             	if(otherBoard == null){
-            		sender.sendMessage("That faction doesn't exist!");
+            		sender.sendMessage("§cThat faction doesn't exist!");
             		return; 
             	}
             	
             	boolean alreadyEnemies = board.GetRelation(otherBoard) == Relation.Enemy; 
             	if(alreadyEnemies){
-            		sender.sendMessage(String.format("You are already enemies with /%s/!", otherFactionName));
+            		sender.sendMessage(String.format("§cYou are already enemies with /%s/!", otherFactionName));
             		return; 
             	}
             	
             	if(user.BoardName.equals(otherFactionName)){
-            		sender.sendMessage(String.format("You cannot be in a relationship with yourself!"));
+            		sender.sendMessage(String.format("§cYou cannot be in a relationship with yourself!"));
             		return; 
             	}
             	
@@ -200,8 +200,8 @@ public class Commands implements CommandExecutor  {
             	otherBoard.Enemies.add(board.Name); 
             	otherBoard.Allies.remove(board.Name); 
             	
-            	board.MessageMembers(String.format("%s has notified /%s/ that you are now enemies!", player.getDisplayName(), otherFactionName));
-            	otherBoard.MessageMembers(String.format("/%s/ has declared war! They are now your enemy.", board.Name));
+            	board.MessageMembers(String.format("§c%s has notified /%s/ that you are now enemies!", player.getDisplayName(), otherFactionName));
+            	otherBoard.MessageMembers(String.format("§c/%s/ has declared war! They are now your enemy.", board.Name));
 			}
 		});
 		
@@ -210,26 +210,26 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
 				if(arguments.length == 1){
-            		sender.sendMessage("Please specify a board! Don't include //s");
+            		sender.sendMessage("§cPlease specify a board! Don't include //s");
             		return; 
             	}
 				
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
         		Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
             	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
-            		sender.sendMessage(String.format("You are not a mod or admin of /%s/!", board.Name));
+            		sender.sendMessage(String.format("§cYou are not a mod or admin of /%s/!", board.Name));
             		return; 
             	}
 
@@ -237,24 +237,24 @@ public class Commands implements CommandExecutor  {
             	Board otherBoard = Board.FromName(otherFactionName); 
             	
             	if(otherBoard == null){
-            		sender.sendMessage("That faction doesn't exist!");
+            		sender.sendMessage("§cThat faction doesn't exist!");
             		return; 
             	}
             	
             	boolean alreadyAllies = board.GetRelation(otherBoard) == Relation.Ally; 
             	if(alreadyAllies){
-                	sender.sendMessage(String.format("Your faction is already in an alliance with /%s/", otherFactionName));
+                	sender.sendMessage(String.format("§dYour faction is already in an alliance with /%s/", otherFactionName));
             		return; 
             	}
             	
             	boolean alreadyRequestedAwaitingResponse = board.Allies.contains(otherFactionName); 
             	if(alreadyRequestedAwaitingResponse){
-            		sender.sendMessage("Your faction is still awaiting a response!");
+            		sender.sendMessage("§dYour faction is still awaiting a response!");
             		return; 
             	}
             	
             	if(user.BoardName.equals(otherFactionName)){
-            		sender.sendMessage(String.format("You cannot be in a relationship with yourself!"));
+            		sender.sendMessage(String.format("§cYou cannot be in a relationship with yourself!"));
             		return; 
             	}
             	
@@ -263,13 +263,13 @@ public class Commands implements CommandExecutor  {
 
             	boolean acceptingAllyRequest = board.GetRelation(otherBoard) == Relation.Ally;  
             	if(acceptingAllyRequest){
-                	board.MessageMembers(String.format("%s has accepted /%s/'s alliance request!", player.getDisplayName(), otherFactionName));
-                	otherBoard.MessageMembers(String.format("/%s/ has accepted your alliance request!", board.Name));
+                	board.MessageMembers(String.format("§d%s has accepted /%s/'s alliance request!", player.getDisplayName(), otherFactionName));
+                	otherBoard.MessageMembers(String.format("§d/%s/ has accepted your alliance request!", board.Name));
             		return; 
             	}
             	
-            	board.MessageMembers(String.format("%s has sent an ally request to /%s/!", player.getDisplayName(), otherFactionName));
-            	otherBoard.MessageMembers(String.format("/%s/ has sent an ally request! Do /b ally to accept!", board.Name));
+            	board.MessageMembers(String.format("§d%s has sent an ally request to /%s/!", player.getDisplayName(), otherFactionName));
+            	otherBoard.MessageMembers(String.format("§d/%s/ has sent an ally request! Do /b ally to accept!", board.Name));
 			}
 		});
 		
@@ -280,12 +280,12 @@ public class Commands implements CommandExecutor  {
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
         		
             	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
-            		sender.sendMessage("You are not the owner or a mod!");
+            		sender.sendMessage("§cYou are not the owner or a mod!");
             		return; 
             	}
             	
@@ -293,13 +293,13 @@ public class Commands implements CommandExecutor  {
             	Block targetBlock = player.getTargetBlock(IgnoreBlocks, 10);
             	
             	if(targetBlock.getType() != Material.BED_BLOCK){
-            		sender.sendMessage("This is not a bed!!");
+            		sender.sendMessage("§cThis is not a bed!!");
             		return; 
             	}
             	
             	Board board = Board.FromName(user.BoardName); 
             	board.Home = new LocationSerializable(targetBlock.getLocation()); 
-        		sender.sendMessage("This bed is now your board's home!");
+        		sender.sendMessage("§aThis bed is now your board's home!");
 			}
 		});
 		
@@ -308,12 +308,12 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
             	Location bedSpawn = player.getBedSpawnLocation(); 
             	if(bedSpawn == null){
-            		sender.sendMessage("You do not have a bed! Was it destroyed?");
+            		sender.sendMessage("§cYou do not have a bed! Was it destroyed?");
             		return; 
             	}
             	
             	player.teleport(bedSpawn); 
-        		sender.sendMessage("Teleported to your bed!");
+        		sender.sendMessage("§aTeleported to your bed!");
 			}
 		});
 		
@@ -324,26 +324,26 @@ public class Commands implements CommandExecutor  {
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
             	Board board = Board.FromName(user.BoardName); 
             	
             	if(board.Home == null){
-            		sender.sendMessage("Your board doesn't have a home!");
+            		sender.sendMessage("§cYour board doesn't have a home!");
             		return; 
             	}
             	
             	Block block = player.getWorld().getBlockAt((int) board.Home.X, (int) board.Home.Y, (int) board.Home.Z); 
             	
             	if(block.getType() != Material.BED_BLOCK){
-            		sender.sendMessage("Your board's home has been destroyed!!");
+            		sender.sendMessage("§cYour board's home has been destroyed!!");
             		return; 
             	}
             	
             	player.teleport(LocationSerializable.FromLoctionSerializable(board.Home)); 
-        		sender.sendMessage("Teleported to your board's home!");
+        		sender.sendMessage("§aTeleported to your board's home!");
 			}
 		});
 		
@@ -354,21 +354,21 @@ public class Commands implements CommandExecutor  {
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		user.ChatMode = Chat.Global; 
             		return; 
             	}
         		
             	if(user.ChatMode == Chat.Global){
             		user.ChatMode = Chat.Board; 
-            		sender.sendMessage("Now in board-only chat.");
+            		sender.sendMessage("§aNow in board-only chat.");
             		return; 
             	}
             	
             	if(user.ChatMode == Chat.Board){
 
             		user.ChatMode = Chat.Global; 
-            		sender.sendMessage("Now in Global chat.");
+            		sender.sendMessage("§fNow in Global chat.");
             		return; 
             	}
 
@@ -380,26 +380,26 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 
 				if(arguments.length == 1){
-            		sender.sendMessage("Please specify a player!");
+            		sender.sendMessage("§cPlease specify a player!");
             		return; 
             	}
 				
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
         		Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
             	if(user.BoardRank != Rank.Admin){
-            		sender.sendMessage(String.format("You are not admin of /%s/!", board.Name));
+            		sender.sendMessage(String.format("§cYou are not admin of /%s/!", board.Name));
             		return; 
             	}
 
@@ -407,24 +407,24 @@ public class Commands implements CommandExecutor  {
             	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
             	
             	if(otherPlayer == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", otherPlayerName));
             		return; 
             	}
             	
             	if(otherPlayer.getUniqueId() == player.getUniqueId()){
-            		sender.sendMessage("You cannot admin yourself!");
+            		sender.sendMessage("§cYou cannot admin yourself!");
             		return; 
             	}
             	
             	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
             	
             	if(!otherUser.BoardName.equals(user.BoardName)){
-            		sender.sendMessage("You are not in the same board!");
+            		sender.sendMessage("§cYou are not in the same board!");
             		return; 
             	}
             	
             	if(otherUser.BoardRank == Rank.Admin){
-            		sender.sendMessage("You cannot admin the board owner!");
+            		sender.sendMessage("§cYou cannot admin the board owner!");
             		return; 
             	}
 
@@ -436,8 +436,8 @@ public class Commands implements CommandExecutor  {
             	board.Mods.add(user.Id); 
             	board.Admins.remove(user.Id);
 
-        		sender.sendMessage(String.format("Successfully passed admin to %s! You are now a mod.", otherPlayerName));
-            	otherPlayer.sendMessage(String.format("You've been promoted to admin of /%s/ by %s!", user.BoardName, player.getDisplayName()));
+        		sender.sendMessage(String.format("§aSuccessfully passed admin to %s! You are now a mod.", otherPlayerName));
+            	otherPlayer.sendMessage(String.format("§aYou've been promoted to admin of /%s/ by %s!", user.BoardName, player.getDisplayName()));
 			}
 		});
 		
@@ -446,26 +446,26 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 
 				if(arguments.length == 1){
-            		sender.sendMessage("Please specify a player!");
+            		sender.sendMessage("§cPlease specify a player!");
             		return; 
             	}
 				
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
         		Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
             	if(user.BoardRank != Rank.Admin){
-            		sender.sendMessage(String.format("You are not admin of /%s/!", board.Name));
+            		sender.sendMessage(String.format("§cYou are not admin of /%s/!", board.Name));
             		return; 
             	}
 
@@ -473,32 +473,32 @@ public class Commands implements CommandExecutor  {
             	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
             	
             	if(otherPlayer == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", otherPlayerName));
             		return; 
             	}
             	
             	if(otherPlayer.getUniqueId() == player.getUniqueId()){
-            		sender.sendMessage("You cannot promote yourself!");
+            		sender.sendMessage("§cYou cannot promote yourself!");
             		return; 
             	}
             	
             	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
             	
             	if(!otherUser.BoardName.equals(user.BoardName)){
-            		sender.sendMessage("You are not in the same board!");
+            		sender.sendMessage("§cYou are not in the same board!");
             		return; 
             	}
             	
             	if(otherUser.BoardRank == Rank.Admin){
-            		sender.sendMessage("You cannot demote the board owner!");
+            		sender.sendMessage("§cYou cannot demote the board owner!");
             		return; 
             	}
             	
             	board.Mods.remove(otherUser.Id);
             	otherUser.BoardRank = Rank.Normie; 
 
-        		sender.sendMessage(String.format("Successfully demoted %s!", otherPlayerName));
-            	otherPlayer.sendMessage(String.format("You've been demoted to normie of /%s/ by %s!", user.BoardName, player.getDisplayName()));
+        		sender.sendMessage(String.format("§aSuccessfully demoted %s!", otherPlayerName));
+            	otherPlayer.sendMessage(String.format("§aYou've been demoted to normie of /%s/ by %s!", user.BoardName, player.getDisplayName()));
 			}
 		});
 		
@@ -507,26 +507,26 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 
 				if(arguments.length == 1){
-            		sender.sendMessage("Please specify a player!");
+            		sender.sendMessage("§cPlease specify a player!");
             		return; 
             	}
 				
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
         		Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
             	if(user.BoardRank != Rank.Admin){
-            		sender.sendMessage(String.format("You are not admin of /%s/!", board.Name));
+            		sender.sendMessage(String.format("§cYou are not admin of /%s/!", board.Name));
             		return; 
             	}
 
@@ -534,32 +534,32 @@ public class Commands implements CommandExecutor  {
             	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
             	
             	if(otherPlayer == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", otherPlayerName));
             		return; 
             	}
             	
             	if(otherPlayer.getUniqueId() == player.getUniqueId()){
-            		sender.sendMessage("You cannot promote yourself!");
+            		sender.sendMessage("§cYou cannot promote yourself!");
             		return; 
             	}
             	
             	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
             	
             	if(!otherUser.BoardName.equals(user.BoardName)){
-            		sender.sendMessage("You are not in the same board!");
+            		sender.sendMessage("§cYou are not in the same board!");
             		return; 
             	}
             	
             	if(otherUser.BoardRank == Rank.Admin){
-            		sender.sendMessage("You cannot promote the board owner!");
+            		sender.sendMessage("§cYou cannot promote the board owner!");
             		return; 
             	}
             	
             	board.Mods.add(otherUser.Id);
             	otherUser.BoardRank = Rank.Mod; 
 
-        		sender.sendMessage(String.format("Successfully promoted %s!", otherPlayerName));
-            	otherPlayer.sendMessage(String.format("You've been promoted to mod of /%s/ by %s!", user.BoardName, player.getDisplayName()));
+        		sender.sendMessage(String.format("§aSuccessfully promoted %s!", otherPlayerName));
+            	otherPlayer.sendMessage(String.format("§aYou've been promoted to mod of /%s/ by %s!", user.BoardName, player.getDisplayName()));
 			}
 		});
 		
@@ -568,26 +568,26 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 
 				if(arguments.length == 1){
-            		sender.sendMessage("Please specify a player!");
+            		sender.sendMessage("§cPlease specify a player!");
             		return; 
             	}
 				
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
         		Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
             	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
-            		sender.sendMessage(String.format("You are not a mod or admin of /%s/!", board.Name));
+            		sender.sendMessage(String.format("§cYou are not a mod or admin of /%s/!", board.Name));
             		return; 
             	}
 
@@ -595,29 +595,29 @@ public class Commands implements CommandExecutor  {
             	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
             	
             	if(otherPlayer == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", otherPlayerName));
             		return; 
             	}
             	
             	if(otherPlayer.getUniqueId() == player.getUniqueId()){
-            		sender.sendMessage("You cannot invite yourself!");
+            		sender.sendMessage("§cYou cannot invite yourself!");
             		return; 
             	}
             	
             	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
             	
             	if(!otherUser.BoardName.equals(user.BoardName)){
-            		sender.sendMessage("You are not in the same board!");
+            		sender.sendMessage("§cYou are not in the same board!");
             		return; 
             	}
             	
             	if(otherUser.BoardRank == Rank.Admin){
-            		sender.sendMessage("You cannot kick the board owner!");
+            		sender.sendMessage("§cYou cannot kick the board owner!");
             		return; 
             	}
             	
             	if(otherUser.BoardRank == Rank.Mod && user.BoardRank == Rank.Mod){
-            		sender.sendMessage("Only the board owner can remove other mods!");
+            		sender.sendMessage("§cOnly the board owner can remove other mods!");
             		return; 
             	}
             	
@@ -628,8 +628,8 @@ public class Commands implements CommandExecutor  {
             	otherUser.BoardName = null; 
             	otherUser.BoardRank = Rank.Normie; 
 
-        		sender.sendMessage(String.format("Successfully kicked %s!", otherPlayerName));
-            	otherPlayer.sendMessage(String.format("You've been kicked from /%s/ by %s!", user.BoardName, player.getDisplayName()));
+        		sender.sendMessage(String.format("§aSuccessfully kicked %s!", otherPlayerName));
+            	otherPlayer.sendMessage(String.format("§cYou've been kicked from /%s/ by %s!", user.BoardName, player.getDisplayName()));
 			}
 		});
 		
@@ -639,19 +639,19 @@ public class Commands implements CommandExecutor  {
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
             	Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
             	if(user.BoardRank == Rank.Admin && board.Admins.size() == 1 && board.Members.size() > 1){
-            		sender.sendMessage(String.format("/%s/ cannot be left until a new admin is assigned!", board.Name));
+            		sender.sendMessage(String.format("§c/%s/ cannot be left until a new admin is assigned!", board.Name));
             		return; 
             	}
 
@@ -662,12 +662,12 @@ public class Commands implements CommandExecutor  {
             	// if empty, remove 
             	if(board.Members.size() == 0){
             		Memory.Boards.remove(board.Name); 
-            		sender.sendMessage(String.format("/%s/ disbanded!", board.Name));
+            		sender.sendMessage(String.format("§a/%s/ disbanded!", board.Name));
             	}
             	
             	user.BoardName = null; 
             	user.BoardRank = Rank.Normie; 
-        		sender.sendMessage(String.format("You have left /%s/!", board.Name));
+        		sender.sendMessage(String.format("§aYou have left /%s/!", board.Name));
 			}
 		}); 
 
@@ -677,25 +677,25 @@ public class Commands implements CommandExecutor  {
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(user.BoardRank != Rank.Admin){
-            		sender.sendMessage("You are not a board admin!");
+            		sender.sendMessage("§cYou are not a board admin!");
             		return; 
             	}
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
             	Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
             	board.Open = !board.Open; 
             	
-            	String message = String.format("The board is now %s!", (board.Open ? "open" : "closed"));
+            	String message = String.format("§aThe board is now %s!", (board.Open ? "open" : "closed"));
             	sender.sendMessage(message); 
 			}
 		}); 
@@ -705,26 +705,26 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
             	
 				if(arguments.length == 1){
-            		sender.sendMessage("Please specify a player!");
+            		sender.sendMessage("§cPlease specify a player!");
             		return; 
             	}
             	
             	User user = User.FromUUID(player.getUniqueId()); 
             	
             	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
-            		sender.sendMessage("You are not a board admin or mod!");
+            		sender.sendMessage("§cYou are not a board admin or mod!");
             		return; 
             	}
             	
             	if(!user.HasBoard()){
-            		sender.sendMessage("You are not in a board!");
+            		sender.sendMessage("§cYou are not in a board!");
             		return; 
             	}
             	
             	Board board = Board.FromName(user.BoardName); 
             	
             	if(board == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
             		return; 
             	}
             	
@@ -733,19 +733,19 @@ public class Commands implements CommandExecutor  {
             	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
             	
             	if(otherPlayer == null){
-            		sender.sendMessage(String.format("/%s/ not found?!", otherPlayerName));
+            		sender.sendMessage(String.format("§c/%s/ not found?!", otherPlayerName));
             		return; 
             	}
             	
             	if(otherPlayer.getUniqueId() == player.getUniqueId()){
-            		sender.sendMessage("You cannot invite yourself!");
+            		sender.sendMessage("§cYou cannot invite yourself!");
             		return; 
             	}
             	
             	board.InvitedMembers.add(otherPlayer.getUniqueId());
 
-        		sender.sendMessage(String.format("Invited %s to your /%s/", otherPlayerName, user.BoardName));
-        		otherPlayer.sendMessage(String.format("You've been invited to /%s/ by %s! Do /b join %s to accept!", user.BoardName, player.getDisplayName(), user.BoardName));
+        		sender.sendMessage(String.format("§aInvited %s to your /%s/", otherPlayerName, user.BoardName));
+        		otherPlayer.sendMessage(String.format("§aYou've been invited to /%s/ by %s! Do /b join %s to accept!", user.BoardName, player.getDisplayName(), user.BoardName));
 			}
 		}); 
 		
@@ -753,7 +753,7 @@ public class Commands implements CommandExecutor  {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				if(arguments.length == 1){
-            		sender.sendMessage("Please specify a board!");
+            		sender.sendMessage("§cPlease specify a board!");
             		return; 
             	}
             	
@@ -761,7 +761,7 @@ public class Commands implements CommandExecutor  {
             	User user = User.FromUUID(playerId); 
             	
             	if(user.HasBoard()){
-            		sender.sendMessage("Leave your current board with /b leave first!");
+            		sender.sendMessage("§cLeave your current board with /b leave first!");
             		return; 
             	}
             	
@@ -769,12 +769,12 @@ public class Commands implements CommandExecutor  {
             	Board board = Board.FromName(boardName);
             	
             	if(board == null){
-            		sender.sendMessage("Board not found?!");
+            		sender.sendMessage("§cBoard not found?!");
             		return; 
             	}
             	
             	if(!board.Open && !board.InvitedMembers.contains(playerId)){
-            		sender.sendMessage("You have not been invited to this board!");
+            		sender.sendMessage("§cYou have not been invited to this board!");
             		return;
             	}
             	
@@ -784,20 +784,22 @@ public class Commands implements CommandExecutor  {
             	user.BoardName = board.Name; 
             	user.BoardRank = Rank.Normie; 
             	
-        		sender.sendMessage(String.format("Successfully joined /%s/!", user.BoardName));
+        		sender.sendMessage(String.format("§aSuccessfully joined /%s/!", user.BoardName));
 			}
 		}); 
 		
-		commands.put("saveall", new MyCommand(){
-			@Override
-			public void run(CommandSender sender, Player player, String[] arguments) {
-				try {
-					Memory.SaveToDB();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} 
-			}
-		}); 
+		if(false){
+			commands.put("saveall", new MyCommand(){
+				@Override
+				public void run(CommandSender sender, Player player, String[] arguments) {
+					try {
+						Memory.SaveToDB();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} 
+				}
+			}); 			
+		}
 		
 	}
 
