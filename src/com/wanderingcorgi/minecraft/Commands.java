@@ -72,6 +72,26 @@ public class Commands implements CommandExecutor  {
             }
         });
 		
+		commands.put("ally",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+        		
+            	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
+            		sender.sendMessage("You are not the owner or a mod!");
+            		return; 
+            	}
+            	
+            	
+			}
+		});
+		
 		commands.put("sethome",  new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {

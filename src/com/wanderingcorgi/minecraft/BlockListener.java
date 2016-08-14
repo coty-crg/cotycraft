@@ -38,31 +38,47 @@ public class BlockListener implements Listener {
 		List<Block> blocks = event.getBlocks();
 		for(Block block : blocks){
 			boolean isTNT = block.getType() == Material.TNT; 
+			boolean isRedstoneTorch = block.getType() == Material.REDSTONE_TORCH_OFF || block.getType() == Material.REDSTONE_TORCH_ON;
+			boolean isEmeraldBlock = block.getType() == Material.EMERALD_BLOCK; 
 			boolean isEnforced = Memory.GetDurability(block) > 0; 
 			
-			if(isTNT || isEnforced){
+			if(isTNT || isEnforced || isRedstoneTorch || isEmeraldBlock){
 				event.setCancelled(true);
 				return; 
 			}
 		}
 	}
 	
-	private static List<Material> Tools = Arrays.asList( Material.AIR,
+	private static final List<Material> Tools = Arrays.asList( Material.AIR,
 			Material.WOOD_AXE, Material.WOOD_HOE, Material.WOOD_SPADE, Material.WOOD_SWORD, Material.WOOD_PICKAXE,
 			Material.STONE_AXE, Material.STONE_HOE, Material.STONE_SPADE, Material.STONE_SWORD, Material.STONE_PICKAXE,
 			Material.GOLD_AXE, Material.GOLD_HOE, Material.GOLD_SPADE, Material.GOLD_SWORD, Material.GOLD_PICKAXE,
 			Material.IRON_AXE, Material.IRON_HOE, Material.IRON_SPADE, Material.IRON_SWORD, Material.IRON_PICKAXE,
 			Material.DIAMOND_AXE, Material.DIAMOND_HOE, Material.DIAMOND_SPADE, Material.DIAMOND_SWORD, Material.DIAMOND_PICKAXE); 
 	
+	public static final List<Material> Doors = Arrays.asList( 
+			Material.WOOD_DOOR, Material.ACACIA_DOOR, Material.ACACIA_DOOR_ITEM, Material.BIRCH_DOOR, 
+			Material.DARK_OAK_DOOR, Material.IRON_DOOR, Material.IRON_DOOR_BLOCK, Material.JUNGLE_DOOR,
+			Material.SPRUCE_DOOR, Material.SPRUCE_DOOR, Material.TRAP_DOOR, Material.WOODEN_DOOR); 
+	
+	public static boolean IsDoor(Material input){
+		for(Material mat : Doors){
+			if(mat == input)
+				return true; 
+		}
+		
+		return false; 
+	}
 	
 	@EventHandler
     public void onInteractEvent(PlayerInteractEvent event) {
-        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-        	
-        	Player player = event.getPlayer(); 
-        	
+
+    	Player player = event.getPlayer(); 
+        Action action = event.getAction();
+        Block block = event.getClickedBlock(); 
+        
+        if (action == Action.LEFT_CLICK_BLOCK) {
         	ItemStack itemInHand = player.getItemInHand();
-        	
         	if(itemInHand == null || Tools.contains(itemInHand.getType()))
         		return; 
         	
@@ -74,9 +90,32 @@ public class BlockListener implements Listener {
         		player.setItemInHand(null);
         	}
 
-        	Block block = event.getClickedBlock(); 
+        	
         	Memory.IncreaseDurability(block, 100);
         	event.setCancelled(true);
+        }
+        
+        if(action == Action.RIGHT_CLICK_BLOCK){
+        	if(!IsDoor(block.getType()))
+        		return;
+        	
+        	LocationSerializable ls = new LocationSerializable(block.getLocation()); 
+        	String doorBoardOwner = Memory.Doors.get(ls);
+        	
+        	if(doorBoardOwner == null){
+        		ls = new LocationSerializable(block.getLocation().getWorld(), block.getLocation().getX(), block.getLocation().getY() - 1, block.getLocation().getZ() ); 
+            	doorBoardOwner = Memory.Doors.get(ls);
+            	
+            	if(doorBoardOwner == null)
+            		return; 
+        	}
+        		
+        	User user = User.FromUUID(player.getUniqueId()); 
+        	if(user.BoardName != doorBoardOwner){
+        		player.sendMessage(String.format("/%s/ owns this door! You must destroy it to pass.", doorBoardOwner));
+        		event.setCancelled(true);
+        		return; 
+        	}
         }
     }
 	
@@ -148,40 +187,25 @@ public class BlockListener implements Listener {
 		}
 		
 		// handle claims 
-		if(block.getType() != Material.REDSTONE_TORCH_ON && block.getType() != Material.REDSTONE_COMPARATOR_OFF)
-			return; 
-		
-		Block relative = block.getRelative(BlockFace.DOWN); 
-		if(relative.getType() != Material.EMERALD_BLOCK)
-			return; 
-		
-		ChunkSerializable ls = new ChunkSerializable(relative.getLocation()); 
-		Date date = new Date(System.currentTimeMillis()); 
-		Memory.ProtectorBlocks.put(ls, date); 
-	}
-	
-	/*@EventHandler // scrapped for now for being unreliable 
-	public void onBlockRedstoneEvent(BlockRedstoneEvent event){
-		Block block = event.getBlock();
-		
-		List<Block> Relatives = Arrays.asList(
-				block.getRelative(BlockFace.EAST), 
-				block.getRelative(BlockFace.WEST),
-				block.getRelative(BlockFace.NORTH),
-				block.getRelative(BlockFace.SOUTH),
-				block.getRelative(BlockFace.DOWN),
-				block.getRelative(BlockFace.UP)); 
-				
-		for(Block relative : Relatives){
-
+		if(block.getType() == Material.REDSTONE_TORCH_ON && block.getType() == Material.REDSTONE_TORCH_OFF){
+			Block relative = block.getRelative(BlockFace.DOWN); 
 			if(relative.getType() != Material.EMERALD_BLOCK)
-				continue; 
+				return; 
 			
-			if(relative.isBlockPowered() || relative.isBlockIndirectlyPowered()){
-				int newCurrent = relative.getBlockPower();  
-				Bukkit.getConsoleSender().sendMessage(String.format("POWER CHANGE ON EMERALD BLOCK: %s", newCurrent));
-			}
+			ChunkSerializable ls = new ChunkSerializable(relative.getLocation()); 
+			Date date = new Date(System.currentTimeMillis()); 
+			Memory.ProtectorBlocks.put(ls, date);
+			return; 
+		} 
+		
+		// handle door claims 
+		if(IsDoor(block.getType())){
+			Player player = event.getPlayer(); 
+			User user = User.FromUUID(player.getUniqueId()); 
+			if(!user.HasBoard()) return; 
+			LocationSerializable ls = new LocationSerializable(block.getLocation()); 
+			Memory.Doors.put(ls, user.BoardName); 
 		}
 		
-	}*/
+	}
 }

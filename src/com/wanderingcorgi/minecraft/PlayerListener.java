@@ -11,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.wanderingcorgi.minecraft.User.Chat;
 import com.wanderingcorgi.minecraft.User.Rank;
@@ -23,6 +25,25 @@ public class PlayerListener implements Listener {
 	public PlayerListener(Main plugin){
 		this.plugin = plugin;
 		Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+	}
+	
+	@EventHandler
+	public void OnPlayerTeleportEvent(PlayerTeleportEvent event){
+		boolean IsEnderpearlEvent = event.getCause() == TeleportCause.ENDER_PEARL; 
+		
+		if(!IsEnderpearlEvent)
+			return; 
+		
+		Location starting = event.getFrom();
+		Location ending = event.getTo(); 
+		double distance = starting.distance(ending);
+		
+		if(distance < 5d){
+			Player player = event.getPlayer();
+			player.sendMessage(String.format("Cannot use enderpearl in small ranges. Blame /tg/ and their hacked clients."));
+			event.setCancelled(true);
+			return; 
+		}
 	}
 	
 	@EventHandler

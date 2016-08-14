@@ -24,9 +24,20 @@ public class Memory {
 
 	// <location of block, durability of that block> 
 	protected static HashMap<LocationSerializable, Integer> Universe = new HashMap<LocationSerializable, Integer>(); 
-	protected static HashMap<LocationSerializable, UUID> Beds = new HashMap<LocationSerializable, UUID>(); 
-	protected static HashMap<ChunkSerializable, Date> ProtectorBlocks = new HashMap<ChunkSerializable, Date>(); 
-	protected static HashMap<String, Board> Boards = new HashMap<String, Board>(); 
+	
+	// <location of bed, owner of bed> 
+	protected static HashMap<LocationSerializable, UUID> Beds = new HashMap<LocationSerializable, UUID>();
+	
+	// <location of door, faction name> 
+	protected static HashMap<LocationSerializable, String> Doors = new HashMap<LocationSerializable, String>();
+	
+	// <chunk protected, date protected since> 
+	protected static HashMap<ChunkSerializable, Date> ProtectorBlocks = new HashMap<ChunkSerializable, Date>();
+	
+	// <board name, board data> 
+	protected static HashMap<String, Board> Boards = new HashMap<String, Board>();
+	
+	// <user id, user data> 
 	protected static HashMap<UUID, User> Users = new HashMap<UUID, User>(); 
 	
 	public static final int MaxDurability = 1280;
@@ -64,24 +75,36 @@ public class Memory {
 		if(durability > 0)
 			return false; 
 		
-		if(block.getType() == Material.BED_BLOCK){
+		Material blockType = block.getType(); 
+		
+		// beds 
+		if(blockType == Material.BED_BLOCK){
 			Location bedLocation = block.getLocation(); 
 			LocationSerializable ls = new LocationSerializable(bedLocation); 
 			Memory.Beds.remove(ls); 
 			return true; 
 		}
 		
-		Block protectorBlock = (block.getType() == Material.EMERALD_BLOCK) ? block : null; 
-		if(block.getType() == Material.REDSTONE_TORCH_ON || block.getType() == Material.REDSTONE_TORCH_OFF){
-			Block relative = block.getRelative(BlockFace.DOWN);
-			if(relative.getType() == Material.EMERALD_BLOCK)
-				protectorBlock = relative; 
+		// protector blocks 
+		if(blockType == Material.EMERALD_BLOCK || blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF){			
+			Block protectorBlock = (blockType == Material.EMERALD_BLOCK) ? block : null; 
+			if(blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF){
+				Block relative = block.getRelative(BlockFace.DOWN);
+				if(relative.getType() == Material.EMERALD_BLOCK)
+					protectorBlock = relative; 
+			}
+			
+			if(protectorBlock != null){
+				ChunkSerializable cs = new ChunkSerializable(protectorBlock.getLocation()); 
+				Memory.ProtectorBlocks.remove(cs); 
+				return true; 
+			}
 		}
 		
-		if(protectorBlock != null){
-			ChunkSerializable cs = new ChunkSerializable(protectorBlock.getLocation()); 
-			Memory.ProtectorBlocks.remove(cs); 
-			return true; 
+		// door blocks 
+		if(BlockListener.IsDoor(blockType)){
+			LocationSerializable ls = new LocationSerializable(block.getLocation()); 
+			Memory.Doors.remove(ls);
 		}
 		
 		return true;
@@ -94,6 +117,7 @@ public class Memory {
 		LoadUserData(); 
 		LoadBedData(); 
 		LoadProtectorData(); 
+		LoadDoorData(); 
 		// PrintOutDB(); 
 	}
 
@@ -120,6 +144,15 @@ public class Memory {
 		FileInputStream fileIn = new FileInputStream(Main.dataFolder + "/saves/Beds.sav");
         ObjectInputStream in = new ObjectInputStream(fileIn);
         Beds = ( HashMap<LocationSerializable, UUID> ) in.readObject();
+        in.close();
+        fileIn.close();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void LoadDoorData() throws IOException, ClassNotFoundException{
+		FileInputStream fileIn = new FileInputStream(Main.dataFolder + "/saves/Doors.sav");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        Doors = ( HashMap<LocationSerializable, String> ) in.readObject();
         in.close();
         fileIn.close();
 	}
@@ -157,6 +190,7 @@ public class Memory {
 		SaveUserData(); 
 		SaveBedData(); 
 		SaveProtectorData(); 
+		SaveDoorData(); 
 	}
 	
 	public static void SaveWorldData() throws IOException{
@@ -179,6 +213,14 @@ public class Memory {
 		FileOutputStream fileOut = new FileOutputStream(Main.dataFolder + "/saves/Beds.sav");
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(Beds);
+        out.close();
+        fileOut.close();
+	}
+	
+	public static void SaveDoorData() throws IOException{
+		FileOutputStream fileOut = new FileOutputStream(Main.dataFolder + "/saves/Doors.sav");
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(Doors);
         out.close();
         fileOut.close();
 	}

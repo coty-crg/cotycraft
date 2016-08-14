@@ -18,6 +18,10 @@ public class Board implements Serializable {
 	public List<UUID> Admins = new ArrayList<UUID>(); 
 	public List<UUID> Mods = new ArrayList<UUID>(); 
 	public List<UUID> InvitedMembers = new ArrayList<UUID>(); 
+
+	public List<String> Enemies = new ArrayList<String>(); 
+	public List<String> Allies = new ArrayList<String>(); 
+	
 	public boolean Open = false; 
 	
 	@Override
