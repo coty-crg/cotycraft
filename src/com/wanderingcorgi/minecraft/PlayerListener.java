@@ -1,15 +1,18 @@
 package com.wanderingcorgi.minecraft;
 
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -26,6 +29,22 @@ public class PlayerListener implements Listener {
 	public PlayerListener(Main plugin){
 		this.plugin = plugin;
 		Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+	}
+	
+	@EventHandler 
+	public void OnBukkitEvent(PlayerBucketEvent event){
+		Block block = event.getBlockClicked();
+		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
+		if(Memory.ProtectorBlocks.containsKey(thisChunk)){
+			Date date =  Memory.ProtectorBlocks.get(thisChunk); 
+			event.setCancelled(true);
+			
+			Player player = event.getPlayer();
+			if(player != null)
+				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! This chunk has been protected since: %s", date.toString()));
+			
+			return; 
+		}
 	}
 	
 	@EventHandler
