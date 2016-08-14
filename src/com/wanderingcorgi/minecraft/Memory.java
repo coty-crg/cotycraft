@@ -40,6 +40,37 @@ public class Memory {
 	// <user id, user data> 
 	protected static HashMap<UUID, User> Users = new HashMap<UUID, User>(); 
 	
+	// < block or item, durability boost >
+	protected static HashMap<Material, Integer> MaterialValues = new HashMap<Material, Integer>(){
+		private static final long serialVersionUID = -327214699939405147L;
+		{
+			put(Material.IRON_INGOT, 4); 
+			put(Material.GOLD_INGOT, 5); 
+			put(Material.IRON_BLOCK, 40); 
+			put(Material.GOLD_BLOCK, 50); 
+			put(Material.BRICK, 2); 
+			put(Material.CAKE, 5);
+			put(Material.BOOK, 1);
+			put(Material.CARROT_ITEM, 1);
+			put(Material.CLAY_BRICK, 2);
+			put(Material.COBBLESTONE, 1);
+			put(Material.DIAMOND, 8);
+			put(Material.DIAMOND_BLOCK, 75);
+			put(Material.DRAGON_EGG, 500);
+			put(Material.EMERALD, 4);
+			put(Material.EMERALD_BLOCK, 40); 
+			put(Material.EXP_BOTTLE, 10);
+			put(Material.GRAVEL, 1);
+			put(Material.GLOWSTONE, 2);
+			put(Material.LAPIS_BLOCK, 30);
+			put(Material.OBSIDIAN, 5);
+			put(Material.QUARTZ, 3);
+			put(Material.QUARTZ_BLOCK, 25);
+			put(Material.SPONGE, 10);
+			put(Material.WOOL, 2); 
+		}
+	}; 
+	
 	public static final int MaxDurability = 1280;
 	public static final int MaxDurabilityUntilExplosionsRequired = 640; 
 	

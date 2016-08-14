@@ -82,6 +82,10 @@ public class BlockListener implements Listener {
         	if(itemInHand == null || Tools.contains(itemInHand.getType()))
         		return; 
         	
+        	int worth = Memory.MaterialValues.getOrDefault(itemInHand.getType(), 0); 
+        	if(worth == 0)
+        		return; 
+        	
         	int oldAmount = itemInHand.getAmount();
         	int newAmount = oldAmount - 1; 
         	itemInHand.setAmount(newAmount);
@@ -89,9 +93,9 @@ public class BlockListener implements Listener {
         	if(newAmount <= 0){
         		player.setItemInHand(null);
         	}
-
         	
-        	Memory.IncreaseDurability(block, 100);
+        	Memory.IncreaseDurability(block, worth);
+        	player.sendMessage(String.format("§7[durability: %s (+%s)]", Memory.GetDurability(block), worth));
         	event.setCancelled(true);
         }
         
