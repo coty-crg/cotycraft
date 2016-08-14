@@ -700,37 +700,6 @@ public class Commands implements CommandExecutor  {
 			}
 		}); 
 		
-		/*commands.put("list", new MyCommand(){
-			@Override
-			public void run(CommandSender sender, Player player, String[] arguments) {
-				
-				User user = User.FromUUID(player.getUniqueId()); 
-				if(user == null) {
-					sender.sendMessage("Error, couldn't find player!");
-					return; 
-				}
-				
-				Board ourBoard = Board.FromName(user.BoardName); 
-				
-				Set<String> keys = Memory.Boards.keySet();
-				StringBuilder message = new StringBuilder(); 
-				
-				message.append("/board/ - member count\n"); 
-				
-				for(String key : keys){
-					Board board = Board.FromName(key); 
-					String relationColor = RelationColor.FromRelation(ourBoard.GetRelation(board)); 
-					message.append(String.format("%s/%s/ - %s\n", 
-							relationColor, 
-							key, 
-							board.Members.size())); 	
-				}
-				
-				String finalMessage = message.toString();
-				sender.sendMessage(finalMessage);
-			}
-		});*/ 
-		
 		commands.put("invite", new MyCommand(){
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
