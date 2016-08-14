@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.wanderingcorgi.minecraft.User.Rank;
+import com.wanderingcorgi.minecraft.User.Relation;
 
 public class Board implements Serializable { 
 
@@ -124,5 +125,20 @@ public class Board implements Serializable {
 		}
 	}
 	
+	public Relation GetRelation(Board otherBoard){
+		if(otherBoard == null)
+			return Relation.Neutral;
+		
+		if(this == otherBoard)
+			return Relation.Faction; 
+		
+		if(Allies.contains(otherBoard.Name) && otherBoard.Allies.contains(Name))
+			return Relation.Ally; 
+		
+		if(Enemies.contains(otherBoard.Name) || otherBoard.Enemies.contains(Name))
+			return Relation.Enemy; 
+		
+		return Relation.Neutral; 
+	}
 
 }

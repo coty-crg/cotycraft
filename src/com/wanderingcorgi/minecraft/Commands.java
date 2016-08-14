@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 
 import com.wanderingcorgi.minecraft.User.Chat;
 import com.wanderingcorgi.minecraft.User.Rank;
+import com.wanderingcorgi.minecraft.User.Relation;
 
 interface MyCommand {
     void run(CommandSender sender, Player player, String[] arguments);
@@ -72,6 +73,76 @@ public class Commands implements CommandExecutor  {
             }
         });
 		
+		commands.put("info",  new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+
+            	String otherFactionName = null; 
+				if(arguments.length > 1){
+					otherFactionName = arguments[1]; 
+            	}
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("You are not in a board!");
+            		return; 
+            	}
+            	
+        		Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("/%s/ not found?!", user.BoardName));
+            		return; 
+            	}
+            	
+            	if(otherFactionName == null)
+            		otherFactionName = board.Name; 
+            	
+            	Board otherBoard = Board.FromName(otherFactionName); 
+            	
+            	if(otherBoard == null){
+            		sender.sendMessage("This board does not exist!");
+            		return; 
+            	}
+            	
+        		Relation relationship = board.GetRelation(otherBoard);
+        		String relationColor = RelationColor.FromRelation(relationship); 
+        		
+        		StringBuilder memberList = new StringBuilder();
+        		for(UUID playerId : otherBoard.Members){
+        			Player playerMember = Bukkit.getPlayer(playerId); 
+        			if(playerMember == null) continue; 
+        			memberList.append(playerMember.getDisplayName()); 
+        			memberList.append(','); 
+        		}
+        		
+        		StringBuilder enemyList = new StringBuilder();
+        		StringBuilder allyList = new StringBuilder();
+        		for(String listBoardName : Memory.Boards.keySet()){
+        			Board listBoard = Board.FromName(listBoardName); 
+        			Relation listRelation = board.GetRelation(listBoard); 
+        			
+        			if(listRelation == Relation.Ally)
+        				allyList.append(String.format("%s, ", listBoardName));
+        			
+        			if(listRelation == Relation.Enemy)
+        				enemyList.append(String.format("%s, ", listBoardName));
+        		}
+        		
+        		String message = String.format("%s/%s/ - %s members§f \n§dAlliances: %s §c\nEnemies: %s \n\n§7Online: %s", 
+        				relationColor,
+        				otherBoard.Name,
+        				otherBoard.Members.size(),
+        				allyList.toString(),
+        				enemyList.toString(),
+        				memberList.toString()); 
+        		
+        		sender.sendMessage(message);
+			}
+		});
+		
 		commands.put("enemy",  new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
@@ -108,7 +179,7 @@ public class Commands implements CommandExecutor  {
             		return; 
             	}
             	
-            	boolean alreadyEnemies = otherBoard.Enemies.contains(board.Name); 
+            	boolean alreadyEnemies = board.GetRelation(otherBoard) == Relation.Enemy; 
             	if(alreadyEnemies){
             		sender.sendMessage(String.format("You are already enemies with /%s/!", otherFactionName));
             		return; 
@@ -165,9 +236,15 @@ public class Commands implements CommandExecutor  {
             		return; 
             	}
             	
-            	boolean alreadyAllies = otherBoard.Allies.contains(board.Name); 
+            	boolean alreadyAllies = board.GetRelation(otherBoard) == Relation.Ally; 
             	if(alreadyAllies){
                 	sender.sendMessage(String.format("Your faction is already in an alliance with /%s/", otherFactionName));
+            		return; 
+            	}
+            	
+            	boolean alreadyRequestedAwaitingResponse = board.Allies.contains(otherFactionName); 
+            	if(alreadyRequestedAwaitingResponse){
+            		sender.sendMessage("Your faction is still awaiting a response!");
             		return; 
             	}
             	
@@ -179,7 +256,7 @@ public class Commands implements CommandExecutor  {
             	board.Allies.add(otherFactionName); 
             	board.Enemies.remove(otherFactionName); 
 
-            	boolean acceptingAllyRequest = otherBoard.Allies.contains(board.Name); 
+            	boolean acceptingAllyRequest = board.GetRelation(otherBoard) == Relation.Ally;  
             	if(acceptingAllyRequest){
                 	board.MessageMembers(String.format("%s has accepted /%s/'s alliance request!", player.getDisplayName(), otherFactionName));
                 	otherBoard.MessageMembers(String.format("/%s/ has accepted your alliance request!", board.Name));
