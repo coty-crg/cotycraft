@@ -181,6 +181,12 @@ public class BlockListener implements Listener {
 	public void onFireBurnEvent(BlockBurnEvent event){
 		Block block = event.getBlock();
 		
+		int durability = Memory.GetDurability(block); 
+		if(durability > Memory.MaxDurabilityUntilExplosionsRequired){
+			event.setCancelled(true);
+			return; 
+		}
+		
 		boolean actuallyBreak = Memory.BlockBroken(block, 1);
 		if(actuallyBreak) 
 			return; 
