@@ -27,6 +27,8 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import ru.beykerykt.lightapi.LightAPI;
+
 public class BlockListener implements Listener {
 
 	private final Main plugin;
@@ -311,6 +313,7 @@ public class BlockListener implements Listener {
 			ChunkSerializable ls = new ChunkSerializable(relative.getLocation()); 
 			Date date = new Date(System.currentTimeMillis()); 
 			Memory.ProtectorBlocks.put(ls, date);
+			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 
 		} 
 		
@@ -323,6 +326,7 @@ public class BlockListener implements Listener {
 			ChunkSerializable ls = new ChunkSerializable(block.getLocation()); 
 			Date date = new Date(System.currentTimeMillis()); 
 			Memory.ProtectorBlocks.put(ls, date);
+			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 
 		}
 		

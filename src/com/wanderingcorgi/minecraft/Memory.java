@@ -20,6 +20,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
+import ru.beykerykt.lightapi.LightAPI;
+
 public class Memory {
 
 	// <location of block, durability of that block> 
@@ -140,6 +142,7 @@ public class Memory {
 			if(protectorBlock != null){
 				ChunkSerializable cs = new ChunkSerializable(protectorBlock.getLocation()); 
 				Memory.ProtectorBlocks.remove(cs); 
+				LightAPI.deleteLight(protectorBlock.getLocation(), true); 
 				return true; 
 			}
 		}
