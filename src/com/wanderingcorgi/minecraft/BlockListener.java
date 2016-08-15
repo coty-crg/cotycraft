@@ -86,7 +86,9 @@ public class BlockListener implements Listener {
 	public static final List<Material> Doors = Arrays.asList( 
 			Material.WOOD_DOOR, Material.ACACIA_DOOR, Material.ACACIA_DOOR_ITEM, Material.BIRCH_DOOR, 
 			Material.DARK_OAK_DOOR, Material.IRON_DOOR, Material.IRON_DOOR_BLOCK, Material.JUNGLE_DOOR,
-			Material.SPRUCE_DOOR, Material.SPRUCE_DOOR, Material.TRAP_DOOR, Material.WOODEN_DOOR); 
+			Material.SPRUCE_DOOR, Material.SPRUCE_DOOR, Material.TRAP_DOOR, Material.WOODEN_DOOR, 
+			Material.IRON_TRAPDOOR, Material.FENCE_GATE, Material.ACACIA_FENCE_GATE, Material.BIRCH_FENCE_GATE,
+			Material.DARK_OAK_FENCE_GATE, Material.JUNGLE_FENCE_GATE, Material.SPRUCE_FENCE_GATE); 
 	
 	/*private static final List<Material> DurabilityBlacklist = Arrays.asList(Material.AIR,
 			Material.ANVIL, Material.LEAVES, Material.LEAVES_2, Material.SAND,
@@ -193,6 +195,8 @@ public class BlockListener implements Listener {
 	
 	@EventHandler
 	public void onBlockBreakEvent(BlockBreakEvent event){
+		// Bukkit.getConsoleSender().sendMessage("Broke block at " + event.getBlock().getLocation().toString());
+		
 		Block block = event.getBlock();
 		int durabilityLeft = Memory.GetDurability(block);
 		
@@ -204,7 +208,7 @@ public class BlockListener implements Listener {
 		}
 
 		if(durabilityLeft > 1)
-			event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft));
+			event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft - 1));
 		
 		boolean actuallyBreak = Memory.BlockBroken(block, 1);
 		if(actuallyBreak) 
@@ -212,48 +216,6 @@ public class BlockListener implements Listener {
 		
 		event.setCancelled(true);
 	}
-
-	/*@EventHandler
-	public void onBlockExplodeEvent(BlockExplodeEvent event){
-
-		Bukkit.getConsoleSender().sendMessage("test2");
-		Block blockCenter = event.getBlock(); 
-		List<Block> blockList = Arrays.asList(
-				blockCenter,
-				blockCenter.getRelative(BlockFace.UP),
-				blockCenter.getRelative(BlockFace.DOWN),
-				blockCenter.getRelative(BlockFace.EAST),
-				blockCenter.getRelative(BlockFace.EAST_NORTH_EAST),
-				blockCenter.getRelative(BlockFace.EAST_SOUTH_EAST),
-				blockCenter.getRelative(BlockFace.NORTH),
-				blockCenter.getRelative(BlockFace.NORTH_EAST),
-				blockCenter.getRelative(BlockFace.NORTH_NORTH_EAST),
-				blockCenter.getRelative(BlockFace.NORTH_NORTH_WEST),
-				blockCenter.getRelative(BlockFace.NORTH_WEST),
-				blockCenter.getRelative(BlockFace.WEST),
-				blockCenter.getRelative(BlockFace.WEST_NORTH_WEST),
-				blockCenter.getRelative(BlockFace.WEST_SOUTH_WEST),
-				blockCenter.getRelative(BlockFace.SOUTH),
-				blockCenter.getRelative(BlockFace.SOUTH_EAST),
-				blockCenter.getRelative(BlockFace.SOUTH_SOUTH_EAST),
-				blockCenter.getRelative(BlockFace.SOUTH_SOUTH_WEST),
-				blockCenter.getRelative(BlockFace.SOUTH_WEST)); 
-		
-		for(Block block : blockList){
-			if(event.blockList().contains( block )) continue;
-			Bukkit.getConsoleSender().sendMessage("checking " + block.getLocation().toString() + ", " + block.getType().toString()); 
-			Memory.BlockBroken(block, 10);
-		}
-		
-		List<Block> originalList = new ArrayList<Block>(event.blockList()); 
-		for(Block block : originalList){
-			boolean actuallyBreak = Memory.BlockBroken(block, 10);
-			if(actuallyBreak)
-				continue; 
-			
-			event.blockList().remove(block); 
-		}
-	}*/
 	
 	@EventHandler
 	public void onEntityExplodeEvent(EntityExplodeEvent event){
@@ -261,82 +223,43 @@ public class BlockListener implements Listener {
 		int damage = isTNT ? 10 : 5; 
 		
 		Block blockCenter = event.getLocation().getWorld().getBlockAt(event.getLocation()); 
+		Block bottom = blockCenter.getRelative(BlockFace.DOWN); 
+		Block top = blockCenter.getRelative(BlockFace.UP); 
 		List<Block> blockList = Arrays.asList(
 				blockCenter,
 				blockCenter.getRelative(BlockFace.UP),
 				blockCenter.getRelative(BlockFace.DOWN),
 				blockCenter.getRelative(BlockFace.EAST),
-				blockCenter.getRelative(BlockFace.EAST_NORTH_EAST),
-				blockCenter.getRelative(BlockFace.EAST_SOUTH_EAST),
 				blockCenter.getRelative(BlockFace.NORTH),
 				blockCenter.getRelative(BlockFace.NORTH_EAST),
-				blockCenter.getRelative(BlockFace.NORTH_NORTH_EAST),
-				blockCenter.getRelative(BlockFace.NORTH_NORTH_WEST),
 				blockCenter.getRelative(BlockFace.NORTH_WEST),
 				blockCenter.getRelative(BlockFace.WEST),
-				blockCenter.getRelative(BlockFace.WEST_NORTH_WEST),
-				blockCenter.getRelative(BlockFace.WEST_SOUTH_WEST),
 				blockCenter.getRelative(BlockFace.SOUTH),
 				blockCenter.getRelative(BlockFace.SOUTH_EAST),
-				blockCenter.getRelative(BlockFace.SOUTH_SOUTH_EAST),
-				blockCenter.getRelative(BlockFace.SOUTH_SOUTH_WEST),
-				blockCenter.getRelative(BlockFace.SOUTH_WEST)
-				);
+				blockCenter.getRelative(BlockFace.SOUTH_WEST),
 				
-		Block bottom = blockCenter.getRelative(BlockFace.DOWN); 
-		List<Block> blockListBottom = Arrays.asList(
-				blockCenter,
+				bottom,
 				bottom.getRelative(BlockFace.EAST),
-				bottom.getRelative(BlockFace.EAST_NORTH_EAST),
-				bottom.getRelative(BlockFace.EAST_SOUTH_EAST),
 				bottom.getRelative(BlockFace.NORTH),
 				bottom.getRelative(BlockFace.NORTH_EAST),
-				bottom.getRelative(BlockFace.NORTH_NORTH_EAST),
-				bottom.getRelative(BlockFace.NORTH_NORTH_WEST),
 				bottom.getRelative(BlockFace.NORTH_WEST),
 				bottom.getRelative(BlockFace.WEST),
-				bottom.getRelative(BlockFace.WEST_NORTH_WEST),
-				bottom.getRelative(BlockFace.WEST_SOUTH_WEST),
 				bottom.getRelative(BlockFace.SOUTH),
 				bottom.getRelative(BlockFace.SOUTH_EAST),
-				bottom.getRelative(BlockFace.SOUTH_SOUTH_EAST),
-				bottom.getRelative(BlockFace.SOUTH_SOUTH_WEST),
-				bottom.getRelative(BlockFace.SOUTH_WEST)
-				);
-		
-		
-		Block top = blockCenter.getRelative(BlockFace.UP); 
-		List<Block> blockListTop = Arrays.asList(
-				blockCenter,
+				bottom.getRelative(BlockFace.SOUTH_WEST),
+				
+				top,
 				top.getRelative(BlockFace.EAST),
-				top.getRelative(BlockFace.EAST_NORTH_EAST),
-				top.getRelative(BlockFace.EAST_SOUTH_EAST),
 				top.getRelative(BlockFace.NORTH),
 				top.getRelative(BlockFace.NORTH_EAST),
-				top.getRelative(BlockFace.NORTH_NORTH_EAST),
-				top.getRelative(BlockFace.NORTH_NORTH_WEST),
 				top.getRelative(BlockFace.NORTH_WEST),
 				top.getRelative(BlockFace.WEST),
-				top.getRelative(BlockFace.WEST_NORTH_WEST),
-				top.getRelative(BlockFace.WEST_SOUTH_WEST),
 				top.getRelative(BlockFace.SOUTH),
 				top.getRelative(BlockFace.SOUTH_EAST),
-				top.getRelative(BlockFace.SOUTH_SOUTH_EAST),
-				top.getRelative(BlockFace.SOUTH_SOUTH_WEST),
 				top.getRelative(BlockFace.SOUTH_WEST)
 				);
 		
 		for(Block block : blockList){
-			if(event.blockList().contains( block )) continue;
-			Memory.BlockBroken(block, damage);
-		}
-
-		for(Block block : blockListTop){
-			if(event.blockList().contains( block )) continue;
-			Memory.BlockBroken(block, damage);
-		}
-		
-		for(Block block : blockListBottom){
 			if(event.blockList().contains( block )) continue;
 			Memory.BlockBroken(block, damage);
 		}
@@ -349,6 +272,16 @@ public class BlockListener implements Listener {
 			
 			Bukkit.getConsoleSender().sendMessage(String.format("Removing %s", block.getLocation().toString()));
 			event.blockList().remove(block); 
+		}
+	}
+	
+	@EventHandler
+	public void OnRedstonePower(BlockRedstoneEvent event){
+		Block block = event.getBlock(); 
+		boolean isDoor = IsDoor(block.getType()); 
+		if(isDoor){
+			event.setNewCurrent(0);
+			return; 
 		}
 	}
 	
@@ -380,6 +313,18 @@ public class BlockListener implements Listener {
 			Memory.ProtectorBlocks.put(ls, date);
 			return; 
 		} 
+		
+		// handle claims if emerald is placed under redstone torch 
+		if(block.getType() == Material.EMERALD_BLOCK){
+			Block relative = block.getRelative(BlockFace.UP); 
+			if(relative.getType() != Material.REDSTONE_TORCH_ON && relative.getType() != Material.REDSTONE_TORCH_OFF)
+				return; 
+			
+			ChunkSerializable ls = new ChunkSerializable(block.getLocation()); 
+			Date date = new Date(System.currentTimeMillis()); 
+			Memory.ProtectorBlocks.put(ls, date);
+			return; 
+		}
 		
 		// handle door claims 
 		if(IsDoor(block.getType())){
