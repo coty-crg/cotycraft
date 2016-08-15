@@ -18,6 +18,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -114,6 +115,16 @@ public class BlockListener implements Listener {
 		}
 		
 		return false; 
+	}
+
+	@EventHandler
+	public void OnBlockFromToEvent(BlockFromToEvent event){
+		Block targetBlock = event.getToBlock();
+		int durability = Memory.GetDurability(targetBlock); 
+		if(durability > 0 || targetBlock.getType() == Material.REDSTONE_TORCH_OFF || targetBlock.getType() == Material.REDSTONE_TORCH_ON){
+			event.setCancelled(true);
+			return; 
+		}
 	}
 	
 	@EventHandler

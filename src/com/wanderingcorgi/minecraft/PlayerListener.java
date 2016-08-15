@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -31,8 +32,8 @@ public class PlayerListener implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 
-	/*@EventHandler
-	public void OnBukkitEvent(PlayerBucketEvent event){
+	@EventHandler
+	public void OnPlayerBucketEvent(PlayerBucketEmptyEvent event){
 		Block block = event.getBlockClicked();
 		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
 		if(Memory.ProtectorBlocks.containsKey(thisChunk)){
@@ -45,7 +46,7 @@ public class PlayerListener implements Listener {
 			
 			return; 
 		}
-	}*/
+	}
 	
 	@EventHandler
 	public void OnPlayerTeleportEvent(PlayerTeleportEvent event){
