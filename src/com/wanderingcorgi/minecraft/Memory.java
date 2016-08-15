@@ -58,7 +58,7 @@ public class Memory {
 			put(Material.DIAMOND_BLOCK, 75);
 			put(Material.DRAGON_EGG, 500);
 			put(Material.EMERALD, 4);
-			put(Material.EMERALD_BLOCK, 40); 
+			put(ProtectorBlock, 40); 
 			put(Material.EXP_BOTTLE, 10);
 			put(Material.GRAVEL, 1);
 			put(Material.GLOWSTONE, 2);
@@ -71,6 +71,7 @@ public class Memory {
 		}
 	}; 
 	
+	public static final Material ProtectorBlock = Material.IRON_BLOCK; 
 	public static final int MaxDurability = 1280;
 	public static final int MaxDurabilityUntilExplosionsRequired = 640; 
 	
@@ -128,11 +129,11 @@ public class Memory {
 		}
 		
 		// protector blocks 
-		if(blockType == Material.EMERALD_BLOCK || blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF){			
-			Block protectorBlock = (blockType == Material.EMERALD_BLOCK) ? block : null; 
+		if(blockType == ProtectorBlock || blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF){			
+			Block protectorBlock = (blockType == ProtectorBlock) ? block : null; 
 			if(blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF){
 				Block relative = block.getRelative(BlockFace.DOWN);
-				if(relative.getType() == Material.EMERALD_BLOCK)
+				if(relative.getType() == ProtectorBlock)
 					protectorBlock = relative; 
 			}
 			

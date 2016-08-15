@@ -42,7 +42,7 @@ public class BlockListener implements Listener {
 		for(Block block : blocks){
 			boolean isTNT = block.getType() == Material.TNT; 
 			boolean isRedstoneTorch = block.getType() == Material.REDSTONE_TORCH_OFF || block.getType() == Material.REDSTONE_TORCH_ON;
-			boolean isEmeraldBlock = block.getType() == Material.EMERALD_BLOCK; 
+			boolean isEmeraldBlock = block.getType() == Memory.ProtectorBlock; 
 			boolean isEnforced = Memory.GetDurability(block) > 0; 
 			
 			if(isTNT || isEnforced || isRedstoneTorch || isEmeraldBlock){
@@ -62,7 +62,7 @@ public class BlockListener implements Listener {
 		for(Block block : blocks){
 			boolean isTNT = block.getType() == Material.TNT; 
 			boolean isRedstoneTorch = block.getType() == Material.REDSTONE_TORCH_OFF || block.getType() == Material.REDSTONE_TORCH_ON;
-			boolean isEmeraldBlock = block.getType() == Material.EMERALD_BLOCK; 
+			boolean isEmeraldBlock = block.getType() == Memory.ProtectorBlock; 
 			boolean isEnforced = Memory.GetDurability(block) > 0; 
 			
 			if(isTNT || isEnforced || isRedstoneTorch || isEmeraldBlock){
@@ -305,7 +305,7 @@ public class BlockListener implements Listener {
 		// handle claims 
 		if(block.getType() == Material.REDSTONE_TORCH_ON || block.getType() == Material.REDSTONE_TORCH_OFF){
 			Block relative = block.getRelative(BlockFace.DOWN); 
-			if(relative.getType() != Material.EMERALD_BLOCK)
+			if(relative.getType() != Memory.ProtectorBlock)
 				return; 
 			
 			ChunkSerializable ls = new ChunkSerializable(relative.getLocation()); 
@@ -315,7 +315,7 @@ public class BlockListener implements Listener {
 		} 
 		
 		// handle claims if emerald is placed under redstone torch 
-		if(block.getType() == Material.EMERALD_BLOCK){
+		if(block.getType() == Memory.ProtectorBlock){
 			Block relative = block.getRelative(BlockFace.UP); 
 			if(relative.getType() != Material.REDSTONE_TORCH_ON && relative.getType() != Material.REDSTONE_TORCH_OFF)
 				return; 
