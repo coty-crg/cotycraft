@@ -332,7 +332,15 @@ public class Commands implements CommandExecutor  {
             		return; 
             	}
             	
-            	player.teleport(bedSpawn); 
+            	Location aboveBed1 = new Location(bedSpawn.getWorld(), bedSpawn.getX(), bedSpawn.getY() + 1, bedSpawn.getZ()); 
+            	Location aboveBed2 = new Location(bedSpawn.getWorld(), bedSpawn.getX(), bedSpawn.getY() + 2, bedSpawn.getZ()); 
+            	
+            	if(aboveBed1.getBlock().getType().isSolid() || aboveBed2.getBlock().getType().isSolid()){
+            		sender.sendMessage("§cYour home is blocked!");
+            		return; 
+            	}
+            	
+            	player.teleport(aboveBed1); 
         		sender.sendMessage("§aTeleported to your bed!");
 			}
 		}));
@@ -362,7 +370,16 @@ public class Commands implements CommandExecutor  {
             		return; 
             	}
             	
-            	player.teleport(LocationSerializable.FromLoctionSerializable(board.Home)); 
+            	Location bed = LocationSerializable.FromLoctionSerializable(board.Home); 
+            	Location aboveBed1 = new Location(bed.getWorld(), bed.getX(), bed.getY() + 1, bed.getZ()); 
+            	Location aboveBed2 = new Location(bed.getWorld(), bed.getX(), bed.getY() + 2, bed.getZ()); 
+            	
+            	if(aboveBed1.getBlock().getType().isSolid() || aboveBed2.getBlock().getType().isSolid()){
+            		sender.sendMessage("§cYour board's home is blocked!");
+            		return; 
+            	}
+            	
+            	player.teleport(aboveBed1); 
         		sender.sendMessage("§aTeleported to your board's home!");
 			}
 		}));
