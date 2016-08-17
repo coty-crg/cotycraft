@@ -7,9 +7,13 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -83,10 +87,10 @@ public class PlayerListener implements Listener {
 	    	player.setPlayerListName( String.format("/%s/%s", user.BoardName, player.getDisplayName()) );
 	}
 
-	private String BoardChatPrefix = String.format(" %s[board] ", RelationColor.Faction); 
-	private String AdminPrefix = "**";
-	private String ModPrefix = "*"; 
-	private String NormiePrefix = ""; 
+	private final String BoardChatPrefix = String.format(" %s[board] ", RelationColor.Faction); 
+	private final String AdminPrefix = "**";
+	private final String ModPrefix = "*"; 
+	private final String NormiePrefix = ""; 
 	
 	@EventHandler
 	public void AsyncPlayerChatEvent(AsyncPlayerChatEvent event){
@@ -95,8 +99,12 @@ public class PlayerListener implements Listener {
 		User user = User.FromUUID(playerId); 
 		Board board = Board.FromName(user.BoardName); 
 		
-		if(board == null) 
+		String Message = event.getMessage().replace(">", "§a>");; 
+		
+		if(board == null) {
+			event.setMessage(Message);
 			return; 
+		}
 		
 		//loop through everyone on the server, to set appropriate colors and decide whether or not they can hear it
 		Set<Player> listeners = event.getRecipients();
@@ -125,12 +133,37 @@ public class PlayerListener implements Listener {
 							board.Name, 
 							relationColor,
 							playerName, 
-							event.getMessage());
+							Message);
 			
 			listener.sendMessage(message);
 		}
 
 		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void OnEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
+		if( !(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player))  
+			return; 
+		
+		UUID playerId = event.getEntity().getUniqueId(); 
+		UUID otherPlayerId = event.getDamager().getUniqueId(); 
+		if(playerId == null || otherPlayerId == null)
+			return; 
+		
+		User user = User.FromUUID(playerId);
+		User otherUser = User.FromUUID(otherPlayerId); 
+		
+		if(user == null || otherUser == null || user.BoardName == null || otherUser.BoardName == null)
+			return; 
+		
+		if(user.BoardName.equals(otherUser.BoardName)){
+			Player player = Bukkit.getPlayer(playerId);
+			Player otherPlayer = Bukkit.getPlayer(otherPlayerId);
+			otherPlayer.sendMessage(String.format("[§7%s is in your board!]", player.getDisplayName()));
+			event.setCancelled(true);
+			return; 
+		}
 	}
 	
 	@EventHandler
