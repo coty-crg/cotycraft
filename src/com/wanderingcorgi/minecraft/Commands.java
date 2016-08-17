@@ -2,8 +2,10 @@ package com.wanderingcorgi.minecraft;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,6 +32,24 @@ public class Commands implements CommandExecutor  {
 
 	HashMap<String, MyCommand> commands = new HashMap<String, MyCommand>();
 
+	List<BoardCommand> CommandList = new ArrayList<BoardCommand>(); 
+	
+	public class BoardCommand {
+		
+		public MyCommand Command; 
+		public String Description; 
+		public String Arguments; 
+		public String Name; 
+		
+		public BoardCommand(String name, String arguments, String description, MyCommand cmd){
+			Name = name; 
+			Arguments = arguments; 
+			Description = description; 
+			Command = cmd; 
+		}
+		
+	}
+	
 	public Commands(Main plugin) {
 		this.plugin = plugin;
 		initialize();
@@ -40,7 +60,7 @@ public class Commands implements CommandExecutor  {
 	 */
 	public void initialize(){
 
-		commands.put("create", new MyCommand() {
+		CommandList.add(new BoardCommand("create", "name", "Creates a new board. Name limit of 5 characters.", new MyCommand() {
 			@Override
             public void run(CommandSender sender, Player player, String[] arguments) {
             	if(arguments.length == 1){
@@ -76,9 +96,9 @@ public class Commands implements CommandExecutor  {
             	user.BoardRank = Rank.Admin; 
             	sender.sendMessage(String.format("You are now leader of /%s/!", newBoard.Name));
             }
-        });
-		
-		commands.put("info",  new MyCommand() {
+        }));
+
+		CommandList.add(new BoardCommand("info", "board", "Returns the information on a specified board. If no board is given, returns information on your board.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
@@ -146,9 +166,9 @@ public class Commands implements CommandExecutor  {
         		
         		sender.sendMessage(message);
 			}
-		});
-		
-		commands.put("enemy",  new MyCommand() {
+		})); 
+
+		CommandList.add(new BoardCommand("enemy", "board", "Declares war against the specified board.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
@@ -203,9 +223,9 @@ public class Commands implements CommandExecutor  {
             	board.MessageMembers(String.format("§c%s has notified /%s/ that you are now enemies!", player.getDisplayName(), otherFactionName));
             	otherBoard.MessageMembers(String.format("§c/%s/ has declared war! They are now your enemy.", board.Name));
 			}
-		});
+		}));
 		
-		commands.put("ally",  new MyCommand() {
+		CommandList.add(new BoardCommand("ally", "board", "Requests or confirms an alliance with the specified board.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
@@ -271,9 +291,9 @@ public class Commands implements CommandExecutor  {
             	board.MessageMembers(String.format("§d%s has sent an ally request to /%s/!", player.getDisplayName(), otherFactionName));
             	otherBoard.MessageMembers(String.format("§d/%s/ has sent an ally request! Do /b ally to accept!", board.Name));
 			}
-		});
+		}));
 		
-		commands.put("sethome",  new MyCommand() {
+		CommandList.add(new BoardCommand("sethome", "", "While looking at a bed, sets your board's home. If your board's bed is destroyed or moved, the home will be lost.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
@@ -301,9 +321,9 @@ public class Commands implements CommandExecutor  {
             	board.Home = new LocationSerializable(targetBlock.getLocation()); 
         		sender.sendMessage("§aThis bed is now your board's home!");
 			}
-		});
+		}));
 		
-		commands.put("bed",  new MyCommand() {
+		CommandList.add(new BoardCommand("bed", "", "Sleeping in a bed will set your personal home. Using this command will teleport you to your bed. Note: this is different than the board's home bed.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
             	Location bedSpawn = player.getBedSpawnLocation(); 
@@ -315,9 +335,9 @@ public class Commands implements CommandExecutor  {
             	player.teleport(bedSpawn); 
         		sender.sendMessage("§aTeleported to your bed!");
 			}
-		});
+		}));
 		
-		commands.put("home",  new MyCommand() {
+		CommandList.add(new BoardCommand("home", "", "Teleports you to your board's home bed. Note: this is different than your personal bed.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
@@ -345,9 +365,9 @@ public class Commands implements CommandExecutor  {
             	player.teleport(LocationSerializable.FromLoctionSerializable(board.Home)); 
         		sender.sendMessage("§aTeleported to your board's home!");
 			}
-		});
-		
-		commands.put("chat",  new MyCommand() {
+		}));
+
+		CommandList.add(new BoardCommand("chat", "", "Toggles between [Global] and [Board] chat. While in [Board] chat, only your own board members can hear what you say.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
@@ -373,9 +393,9 @@ public class Commands implements CommandExecutor  {
             	}
 
 			}
-		});
+		}));
 		
-		commands.put("admin",  new MyCommand() {
+		CommandList.add(new BoardCommand("admin", "player", "Gives ownership of the board to the specified player.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 
@@ -439,9 +459,9 @@ public class Commands implements CommandExecutor  {
         		sender.sendMessage(String.format("§aSuccessfully passed admin to %s! You are now a mod.", otherPlayerName));
             	otherPlayer.sendMessage(String.format("§aYou've been promoted to admin of /%s/ by %s!", user.BoardName, player.getDisplayName()));
 			}
-		});
+		}));
 		
-		commands.put("demote",  new MyCommand() {
+		CommandList.add(new BoardCommand("demote", "player", "Removes mod rank from specified player.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 
@@ -500,9 +520,9 @@ public class Commands implements CommandExecutor  {
         		sender.sendMessage(String.format("§aSuccessfully demoted %s!", otherPlayerName));
             	otherPlayer.sendMessage(String.format("§aYou've been demoted to normie of /%s/ by %s!", user.BoardName, player.getDisplayName()));
 			}
-		});
+		}));
 		
-		commands.put("promote",  new MyCommand() {
+		CommandList.add(new BoardCommand("promote", "player", "Grants mod rank to the specified player.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 
@@ -561,9 +581,9 @@ public class Commands implements CommandExecutor  {
         		sender.sendMessage(String.format("§aSuccessfully promoted %s!", otherPlayerName));
             	otherPlayer.sendMessage(String.format("§aYou've been promoted to mod of /%s/ by %s!", user.BoardName, player.getDisplayName()));
 			}
-		});
+		}));
 		
-		commands.put("kick",  new MyCommand() {
+		CommandList.add(new BoardCommand("kick", "player", "Removes the specified player from your board.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 
@@ -631,9 +651,9 @@ public class Commands implements CommandExecutor  {
         		sender.sendMessage(String.format("§aSuccessfully kicked %s!", otherPlayerName));
             	otherPlayer.sendMessage(String.format("§cYou've been kicked from /%s/ by %s!", user.BoardName, player.getDisplayName()));
 			}
-		});
+		}));
 		
-		commands.put("leave", new MyCommand(){
+		CommandList.add(new BoardCommand("leave", "", "Leaves your current board. If you are the owner of the board, you can only leave if no other members are in the board or if you give ownership via the /b admin command.", new MyCommand(){
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
             	User user = User.FromUUID(player.getUniqueId()); 
@@ -669,9 +689,9 @@ public class Commands implements CommandExecutor  {
             	user.BoardRank = Rank.Normie; 
         		sender.sendMessage(String.format("§aYou have left /%s/!", board.Name));
 			}
-		}); 
+		}));
 
-		commands.put("open", new MyCommand(){
+		CommandList.add(new BoardCommand("open", "", "Toggles your board between open and closed states. While open, anyone can join without an invite.", new MyCommand(){
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
             	User user = User.FromUUID(player.getUniqueId()); 
@@ -698,9 +718,9 @@ public class Commands implements CommandExecutor  {
             	String message = String.format("§aThe board is now %s!", (board.Open ? "open" : "closed"));
             	sender.sendMessage(message); 
 			}
-		}); 
+		}));
 		
-		commands.put("invite", new MyCommand(){
+		CommandList.add(new BoardCommand("invite", "player", "Invites the specified player to your board.", new MyCommand(){
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
             	
@@ -747,9 +767,9 @@ public class Commands implements CommandExecutor  {
         		sender.sendMessage(String.format("§aInvited %s to your /%s/", otherPlayerName, user.BoardName));
         		otherPlayer.sendMessage(String.format("§aYou've been invited to /%s/ by %s! Do /b join %s to accept!", user.BoardName, player.getDisplayName(), user.BoardName));
 			}
-		}); 
+		}));
 		
-		commands.put("join", new MyCommand(){
+		CommandList.add(new BoardCommand("join", "board", "Joins the specified board. Note: You must have been invited or the board must be open for you to join it.", new MyCommand(){
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				if(arguments.length == 1){
@@ -786,21 +806,24 @@ public class Commands implements CommandExecutor  {
             	
         		sender.sendMessage(String.format("§aSuccessfully joined /%s/!", user.BoardName));
 			}
-		}); 
+		}));
 		
-		if(false){
-			commands.put("saveall", new MyCommand(){
-				@Override
-				public void run(CommandSender sender, Player player, String[] arguments) {
-					try {
-						Memory.SaveToDB();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} 
+		CommandList.add(new BoardCommand("help", "", "Prints out a copy of every command.", new MyCommand(){
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				StringBuilder builder = new StringBuilder(); 
+				
+				for(BoardCommand cmd : CommandList){
+					builder.append(String.format("§b/b %s §a%s §7- %s\n\n", cmd.Name, cmd.Arguments, cmd.Description));
 				}
-			}); 			
-		}
+				
+				sender.sendMessage(builder.toString());
+			}
+		}));
 		
+		for(BoardCommand cmd : CommandList){
+			commands.put(cmd.Name, cmd.Command); 
+		}
 	}
 
 	@Override
