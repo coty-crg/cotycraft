@@ -42,6 +42,7 @@ public class Main extends JavaPlugin{
 	
 	public void onDisable(){
 		Bukkit.getConsoleSender().sendMessage(RelationColor.Faction + "[Stopping 4craft plugin]");
+		databaseThread.stop = true; 
 		databaseThread.interrupt(); 
         try {
 			Memory.SaveToDB();
@@ -52,14 +53,23 @@ public class Main extends JavaPlugin{
 		}
 	}
 	
+	
+	
 	public class DataBaseThread extends Thread {
+		public boolean stop = false; 
 	    public void run() {
 	        while(true) {
 	            try {
-					Thread.sleep(1000 * 5); // save once every two minutes! 
+					
+	            	Thread.sleep(1000 * 30); // save once every three minutes! 
+
+					if(stop)
+						break; 
+					
 					AmSaving = true; 
 			        Memory.SaveToDB();
-			        AmSaving = false; 
+			        AmSaving = false;
+			        
 				} catch (InterruptedException e) {
 					Bukkit.getConsoleSender().sendMessage(RelationColor.Enemy + "[4craft: Error saving DB!]");	
 					Bukkit.getConsoleSender().sendMessage(RelationColor.Enemy + "Shutdown autosave thread.. ");

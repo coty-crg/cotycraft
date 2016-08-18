@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
@@ -19,6 +20,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+
+import com.google.common.io.Files;
 
 import ru.beykerykt.lightapi.LightAPI;
 
@@ -60,7 +63,6 @@ public class Memory {
 			put(Material.DIAMOND_BLOCK, 75);
 			put(Material.DRAGON_EGG, 500);
 			put(Material.EMERALD, 4);
-			put(ProtectorBlock, 40); 
 			put(Material.EXP_BOTTLE, 10);
 			put(Material.GRAVEL, 1);
 			put(Material.GLOWSTONE, 2);
@@ -174,6 +176,70 @@ public class Memory {
 		// PrintOutDB(); 
 	}
 
+	public static void BackupData(){
+		
+		File file = new File(Main.dataFolder + "/saves"); 
+        File[] files = file.listFiles(); 
+        
+        Date date = new Date(System.currentTimeMillis()); 
+        
+        String backupFolderName = String.format("%s/backups/%sM%sD-%sH%S", Main.dataFolder, date.getMonth(), date.getDate(), date.getHours(), date.getMinutes()); 
+        File backupFolder = new File(backupFolderName); 
+    	if(!backupFolder.exists()){
+    		backupFolder.mkdir();
+		}
+        
+		try {
+			
+			// save backup
+			for(File saveFile : files){
+				File backupFile = new File(String.format("%s/%s", backupFolderName, saveFile.getName()));
+				copyFile(saveFile, backupFile); 
+			}
+			
+			// delete out of date backups 
+			File backupDir = new File(Main.dataFolder + "/saves"); 
+	        File[] backupDirs = file.listFiles(); 
+	        for(File backupFile : backupDirs){
+	        	if(!backupFile.isDirectory()) continue;  
+	        	long hoursOld = (System.currentTimeMillis() - backupFile.lastModified()) / 1000l / 60l / 60l;
+	        	if(hoursOld > 4){
+	        		File[] backupFolderFiles = backupFile.listFiles();
+	        		for(File backupFileInFolder : backupFolderFiles){
+	        			backupFileInFolder.delete(); 
+	        		}
+	        		
+	        		backupFile.delete(); 
+	        	}
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void copyFile(File sourceFile, File destFile) throws IOException {
+	    if(!destFile.exists()) {
+	        destFile.createNewFile();
+	    }
+
+	    FileChannel source = null;
+	    FileChannel destination = null;
+
+	    try {
+	        source = new FileInputStream(sourceFile).getChannel();
+	        destination = new FileOutputStream(destFile).getChannel();
+	        destination.transferFrom(source, 0, source.size());
+	    }
+	    finally {
+	        if(source != null) {
+	            source.close();
+	        }
+	        if(destination != null) {
+	            destination.close();
+	        }
+	    }
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void LoadWorldData() throws IOException, ClassNotFoundException{
 		FileInputStream fileIn = new FileInputStream(Main.dataFolder + "/saves/Universe.sav");
@@ -238,6 +304,7 @@ public class Memory {
 	
 	public static void SaveToDB() throws IOException {
 		createDirectories(); 
+		BackupData(); 
 		SaveWorldData();
 		SaveBoardData(); 
 		SaveUserData(); 
@@ -303,6 +370,11 @@ public class Memory {
     	File dir_fac = new File(Main.dataFolder + "/saves");
     	if(!dir_fac.exists()){
     		dir_fac.mkdir();
+		}
+    	
+    	File dir_b = new File(Main.dataFolder + "/backups");
+    	if(!dir_b.exists()){
+    		dir_b.mkdir();
 		}
     }
 	
