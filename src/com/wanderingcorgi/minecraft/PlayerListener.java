@@ -42,12 +42,19 @@ public class PlayerListener implements Listener {
 		Block block = event.getBlockClicked();
 		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
 		if(Memory.ProtectorBlocks.containsKey(thisChunk)){
-			Date date =  Memory.ProtectorBlocks.get(thisChunk); 
-			event.setCancelled(true);
+			String ownerBoardName =  Memory.ProtectorBlocks.get(thisChunk); 
 			
 			Player player = event.getPlayer();
-			if(player != null)
-				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! This chunk has been protected since: %s", date.toString()));
+			
+			if(player == null)
+				return; 
+			
+			User user = User.FromUUID(player.getUniqueId()); 
+			if(user.BoardName == null || !user.BoardName.equals(ownerBoardName)){
+				String relationColor = RelationColor.FromRelation(user.GetRelation(ownerBoardName)); 
+				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! Chunk protected by: %s/%s/", relationColor, ownerBoardName));
+				event.setCancelled(true);
+			}
 			
 			return; 
 		}

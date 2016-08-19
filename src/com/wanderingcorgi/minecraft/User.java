@@ -73,6 +73,26 @@ public class User implements Serializable {
 		return Relation.Neutral; 
 	}
 	
+	public Relation GetRelation(String otherBoardName){
+		
+		if(BoardName == null || BoardName.equals(""))
+			return Relation.Neutral;
+		
+		if(BoardName.equals(otherBoardName))
+			return Relation.Faction; 
+		
+		Board ourBoard = Board.FromName(BoardName); 
+		Board otherBoard = Board.FromName(otherBoardName); 
+		
+		if(ourBoard.Allies.contains(otherBoardName) && otherBoard.Allies.contains(ourBoard.Name))
+			return Relation.Ally; 
+		
+		if(ourBoard.Enemies.contains(otherBoardName) || otherBoard.Enemies.contains(ourBoard.Name))
+			return Relation.Enemy; 
+		
+		return Relation.Neutral; 
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

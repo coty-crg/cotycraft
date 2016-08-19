@@ -301,17 +301,21 @@ public class BlockListener implements Listener {
 	@EventHandler
 	public void onBlockPlaced(BlockPlaceEvent event){
 		Block block = event.getBlock(); 
+		Player player = event.getPlayer();
+		if(player == null)
+			return; 
+
+		User user = User.FromUUID(player.getUniqueId()); 
 		Memory.Universe.remove(new LocationSerializable(block.getLocation())); // revert dura to 0 
 		
 		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
 		if(Memory.ProtectorBlocks.containsKey(thisChunk)){
-			Date date =  Memory.ProtectorBlocks.get(thisChunk); 
-			event.setCancelled(true);
-			
-			Player player = event.getPlayer();
-			if(player != null)
-				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! This chunk has been protected since: %s", date.toString()));
-			
+			String ownerBoardName =  Memory.ProtectorBlocks.get(thisChunk); 
+			if(user.BoardName == null || !user.BoardName.equals(ownerBoardName)){
+				String relationColor = RelationColor.FromRelation(user.GetRelation(ownerBoardName)); 
+				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! Chunk protected by: %s/%s/", relationColor, ownerBoardName));
+				event.setCancelled(true);
+			}
 			return; 
 		}
 		
@@ -322,8 +326,7 @@ public class BlockListener implements Listener {
 				return; 
 			
 			ChunkSerializable ls = new ChunkSerializable(relative.getLocation()); 
-			Date date = new Date(System.currentTimeMillis()); 
-			Memory.ProtectorBlocks.put(ls, date);
+			Memory.ProtectorBlocks.put(ls, user.BoardName);
 			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 
 		} 
@@ -335,16 +338,13 @@ public class BlockListener implements Listener {
 				return; 
 			
 			ChunkSerializable ls = new ChunkSerializable(block.getLocation()); 
-			Date date = new Date(System.currentTimeMillis()); 
-			Memory.ProtectorBlocks.put(ls, date);
+			Memory.ProtectorBlocks.put(ls, user.BoardName);
 			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 
 		}
 		
 		// handle door claims 
 		if(IsDoor(block.getType())){
-			Player player = event.getPlayer(); 
-			User user = User.FromUUID(player.getUniqueId()); 
 			if(!user.HasBoard()) return; 
 			LocationSerializable ls = new LocationSerializable(block.getLocation()); 
 			Memory.Doors.put(ls, user.BoardName); 

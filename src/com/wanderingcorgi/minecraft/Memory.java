@@ -37,7 +37,7 @@ public class Memory {
 	protected static HashMap<LocationSerializable, String> Doors = new HashMap<LocationSerializable, String>();
 	
 	// <chunk protected, date protected since> 
-	protected static HashMap<ChunkSerializable, Date> ProtectorBlocks = new HashMap<ChunkSerializable, Date>();
+	protected static HashMap<ChunkSerializable, String> ProtectorBlocks = new HashMap<ChunkSerializable, String>();
 	
 	// <board name, board data> 
 	protected static HashMap<String, Board> Boards = new HashMap<String, Board>();
@@ -253,7 +253,7 @@ public class Memory {
 	public static void LoadProtectorData() throws IOException, ClassNotFoundException{
 		FileInputStream fileIn = new FileInputStream(Main.dataFolder + "/saves/ProtectorBlocks.sav");
         ObjectInputStream in = new ObjectInputStream(fileIn);
-        ProtectorBlocks = ( HashMap<ChunkSerializable, Date> ) in.readObject();
+        ProtectorBlocks = ( HashMap<ChunkSerializable, String> ) in.readObject();
         in.close();
         fileIn.close();
 	}
