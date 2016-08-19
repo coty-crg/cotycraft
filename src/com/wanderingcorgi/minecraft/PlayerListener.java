@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
 
 import com.wanderingcorgi.minecraft.User.Chat;
 import com.wanderingcorgi.minecraft.User.Rank;
@@ -185,5 +186,22 @@ public class PlayerListener implements Listener {
 			Memory.Beds.put(ls, playerId); 
 			player.sendMessage("Claimed bed!");
 		}
+	}
+	
+	@EventHandler
+	public void onNameTag(AsyncPlayerReceiveNameTagEvent event) {
+		Player namedPlayer = event.getNamedPlayer(); 
+		User namedUser = User.FromUUID(namedPlayer.getUniqueId()); 
+
+		if(!namedUser.HasBoard())
+			return;
+		
+		Player player = event.getPlayer();
+		User user = User.FromUUID(player.getUniqueId()); 
+		Relation relation = user.GetRelation(namedUser);
+		String color = RelationColor.FromRelation(relation); 
+		String newTag = String.format("%s/%s/%s", color, namedUser.BoardName, namedPlayer.getDisplayName()); 
+		
+		event.setTag(newTag);
 	}
 }

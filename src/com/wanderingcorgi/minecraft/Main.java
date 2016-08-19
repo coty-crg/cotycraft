@@ -61,7 +61,7 @@ public class Main extends JavaPlugin{
 	        while(true) {
 	            try {
 					
-	            	Thread.sleep(1000 * 30); // save once every three minutes! 
+	            	Thread.sleep(1000 * 60 * 30); // save once every thirty minutes 
 
 					if(stop)
 						break; 
