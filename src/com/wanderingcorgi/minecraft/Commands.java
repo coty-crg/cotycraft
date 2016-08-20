@@ -17,6 +17,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.kitteh.tag.TagAPI;
 
 import com.wanderingcorgi.minecraft.User.Chat;
 import com.wanderingcorgi.minecraft.User.Rank;
@@ -95,6 +96,7 @@ public class Commands implements CommandExecutor  {
             	user.BoardName = newBoard.Name; 
             	user.BoardRank = Rank.Admin; 
             	sender.sendMessage(String.format("You are now leader of /%s/!", newBoard.Name));
+            	TagAPI.refreshPlayer(player);
             }
         }));
 
@@ -173,7 +175,7 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
 				if(arguments.length == 1){
-            		sender.sendMessage("§cPlease specify a board! Don't include //s");
+            		sender.sendMessage("§cPlease specify a board! Example: /b enemy a");
             		return; 
             	}
 				
@@ -222,6 +224,19 @@ public class Commands implements CommandExecutor  {
             	
             	board.MessageMembers(String.format("§c%s has notified /%s/ that you are now enemies!", player.getDisplayName(), otherFactionName));
             	otherBoard.MessageMembers(String.format("§c/%s/ has declared war! They are now your enemy.", board.Name));
+            	
+            	// refresh names for players 
+            	for(UUID memberId : board.Members){
+            		Player member = Bukkit.getPlayer(memberId);
+            		if(member == null) continue;             		
+            		TagAPI.refreshPlayer(member);
+            	}
+            	
+            	for(UUID memberId : otherBoard.Members){
+            		Player member = Bukkit.getPlayer(memberId);
+            		if(member == null) continue;             		
+            		TagAPI.refreshPlayer(member);
+            	}
 			}
 		}));
 		
@@ -230,7 +245,7 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
 				if(arguments.length == 1){
-            		sender.sendMessage("§cPlease specify a board! Don't include //s");
+            		sender.sendMessage("§cPlease specify a board! Example: /b ally tg");
             		return; 
             	}
 				
@@ -289,7 +304,20 @@ public class Commands implements CommandExecutor  {
             	}
             	
             	board.MessageMembers(String.format("§d%s has sent an ally request to /%s/!", player.getDisplayName(), otherFactionName));
-            	otherBoard.MessageMembers(String.format("§d/%s/ has sent an ally request! Do /b ally to accept!", board.Name));
+            	otherBoard.MessageMembers(String.format("§d/%s/ has sent an ally request! Do /b ally %s to accept!", board.Name, board.Name));
+            	
+            	// refresh names for players 
+            	for(UUID memberId : board.Members){
+            		Player member = Bukkit.getPlayer(memberId);
+            		if(member == null) continue;             		
+            		TagAPI.refreshPlayer(member);
+            	}
+            	
+            	for(UUID memberId : otherBoard.Members){
+            		Player member = Bukkit.getPlayer(memberId);
+            		if(member == null) continue;             		
+            		TagAPI.refreshPlayer(member);
+            	}
 			}
 		}));
 		
@@ -667,6 +695,8 @@ public class Commands implements CommandExecutor  {
 
         		sender.sendMessage(String.format("§aSuccessfully kicked %s!", otherPlayerName));
             	otherPlayer.sendMessage(String.format("§cYou've been kicked from /%s/ by %s!", user.BoardName, player.getDisplayName()));
+            	
+            	TagAPI.refreshPlayer(otherPlayer);
 			}
 		}));
 		
@@ -705,6 +735,8 @@ public class Commands implements CommandExecutor  {
             	user.BoardName = null; 
             	user.BoardRank = Rank.Normie; 
         		sender.sendMessage(String.format("§aYou have left /%s/!", board.Name));
+
+            	TagAPI.refreshPlayer(player);
 			}
 		}));
 
@@ -822,6 +854,7 @@ public class Commands implements CommandExecutor  {
             	user.BoardRank = Rank.Normie; 
             	
         		sender.sendMessage(String.format("§aSuccessfully joined /%s/!", user.BoardName));
+            	TagAPI.refreshPlayer(player);
 			}
 		}));
 		
