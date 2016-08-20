@@ -424,6 +424,32 @@ public class Commands implements CommandExecutor  {
             		return; 
             	}
         		
+            	if(arguments.length > 1){
+            		String desiredChat = arguments[1]; 
+            		switch(desiredChat){
+	            		case "g":
+	            		case "all":
+	            		case "global":
+	            			user.ChatMode = Chat.Global; 
+	                		sender.sendMessage("§fNow in Global chat.");
+	                		return; 
+
+	            		case "a":
+	            		case "ally":
+	                		user.ChatMode = Chat.Ally; 
+	                		sender.sendMessage("§dNow in Ally chat.");
+	                		return; 
+
+	            		case "f":
+	            		case "faction":
+	            		case "b":
+	            		case "board":
+	                		user.ChatMode = Chat.Board; 
+	                		sender.sendMessage("§aNow in board-only chat.");
+	                		return; 
+            		}
+            	}
+            	
             	if(user.ChatMode == Chat.Global){
             		user.ChatMode = Chat.Board; 
             		sender.sendMessage("§aNow in board-only chat.");
@@ -431,12 +457,16 @@ public class Commands implements CommandExecutor  {
             	}
             	
             	if(user.ChatMode == Chat.Board){
+            		user.ChatMode = Chat.Ally; 
+            		sender.sendMessage("§dNow in Ally chat.");
+            		return; 
+            	}
 
+            	if(user.ChatMode == Chat.Ally){
             		user.ChatMode = Chat.Global; 
             		sender.sendMessage("§fNow in Global chat.");
             		return; 
             	}
-
 			}
 		}));
 		

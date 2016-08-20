@@ -315,8 +315,8 @@ public class BlockListener implements Listener {
 				String relationColor = RelationColor.FromRelation(user.GetRelation(ownerBoardName)); 
 				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! Chunk protected by: %s/%s/", relationColor, ownerBoardName));
 				event.setCancelled(true);
+				return; 
 			}
-			return; 
 		}
 		
 		// handle claims 
@@ -325,7 +325,22 @@ public class BlockListener implements Listener {
 			if(relative.getType() != Memory.ProtectorBlock)
 				return; 
 			
+			if(!user.HasBoard()){
+				player.sendMessage("You need to join a /board/ before you can create this");
+				event.setCancelled(true);
+				return; 
+			}
+			
 			ChunkSerializable ls = new ChunkSerializable(relative.getLocation()); 
+			
+			boolean exists = Memory.ProtectorBlocks.containsKey(ls);
+			if(exists){
+				player.sendMessage("There is already a protector rune in this chunk!");
+				event.setCancelled(true);
+				return;
+			}
+			
+			player.sendMessage("Protector rune has been activated!");
 			Memory.ProtectorBlocks.put(ls, user.BoardName);
 			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 
@@ -335,9 +350,24 @@ public class BlockListener implements Listener {
 		if(block.getType() == Memory.ProtectorBlock){
 			Block relative = block.getRelative(BlockFace.UP); 
 			if(relative.getType() != Material.REDSTONE_TORCH_ON && relative.getType() != Material.REDSTONE_TORCH_OFF)
+				return;
+			
+			if(!user.HasBoard()){
+				player.sendMessage("You need to join a /board/ before you can create this");
+				event.setCancelled(true);
 				return; 
+			}
 			
 			ChunkSerializable ls = new ChunkSerializable(block.getLocation()); 
+			
+			boolean exists = Memory.ProtectorBlocks.containsKey(ls);
+			if(exists){
+				player.sendMessage("There is already a protector rune in this chunk!");
+				event.setCancelled(true);
+				return;
+			}
+
+			player.sendMessage("Protector rune has been activated!");
 			Memory.ProtectorBlocks.put(ls, user.BoardName);
 			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 

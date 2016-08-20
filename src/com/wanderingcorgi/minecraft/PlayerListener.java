@@ -96,6 +96,7 @@ public class PlayerListener implements Listener {
 	}
 
 	private final String BoardChatPrefix = String.format(" %s[board] ", RelationColor.Faction); 
+	private final String AllyChatPrefix = String.format(" %s[ally] ", RelationColor.Ally); 
 	private final String AdminPrefix = "**";
 	private final String ModPrefix = "*"; 
 	private final String NormiePrefix = ""; 
@@ -117,6 +118,7 @@ public class PlayerListener implements Listener {
 		//loop through everyone on the server, to set appropriate colors and decide whether or not they can hear it
 		Set<Player> listeners = event.getRecipients();
 		boolean displayFactionPrefix = false; 
+		boolean displayAllyPrefix = false; 
 		for(Player listener : listeners){
 			User listenUser = User.FromUUID(listener.getUniqueId()); 
 			
@@ -126,14 +128,24 @@ public class PlayerListener implements Listener {
 			// faction chat? 
 			displayFactionPrefix = false; 
 			if(user.HasBoard() && user.ChatMode == Chat.Board){
-				if(!listenUser.HasBoard() || !user.BoardName.equals(listenUser.BoardName))
+				if(relation != Relation.Faction)
 					continue; 
 				
 				displayFactionPrefix = true; 
 			}
 			
+			// ally chat? 
+			displayAllyPrefix = false; 
+			if(user.HasBoard() && user.ChatMode == Chat.Ally){
+				if(relation != Relation.Ally && relation != Relation.Faction)
+					continue; 
+				
+				displayAllyPrefix = true; 
+			}
+			
 			// color [rank stars] /board/ (color name): message 
-			String message = String.format("%s%s%s%s/%s/ §b(%s%s§b)§f: %s",
+			String message = String.format("%s%s%s%s%s/%s/ §b(%s%s§b)§f: %s",
+							displayAllyPrefix ? AllyChatPrefix : NormiePrefix,
 							displayFactionPrefix ? BoardChatPrefix : NormiePrefix,
 							relationColor,
 							user.BoardRank == Rank.Admin ? AdminPrefix : NormiePrefix,

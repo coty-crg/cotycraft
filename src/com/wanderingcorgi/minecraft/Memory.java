@@ -133,15 +133,29 @@ public class Memory {
 		}
 		
 		// protector blocks 
-		if(blockType == ProtectorBlock || blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF){			
-			Block protectorBlock = (blockType == ProtectorBlock) ? block : null; 
-			if(blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF){
+		if(blockType == ProtectorBlock || blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF){		
+			boolean removeProtections = false;
+			Block protectorBlock = null; // the iron block 
+			
+			boolean IsProtectorBlock = blockType == ProtectorBlock; 
+			if(IsProtectorBlock){
+				Block relative = block.getRelative(BlockFace.UP);
+				if(relative.getType() == Material.REDSTONE_TORCH_ON || relative.getType() == Material.REDSTONE_TORCH_OFF){
+					protectorBlock = block; 					
+					removeProtections = true; 
+				}
+			}
+
+			boolean IsRedstoneTorch = blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF; 
+			if(IsRedstoneTorch){
 				Block relative = block.getRelative(BlockFace.DOWN);
-				if(relative.getType() == ProtectorBlock)
-					protectorBlock = relative; 
+				if(relative.getType() == ProtectorBlock){
+					protectorBlock = relative; 					
+					removeProtections = true; 
+				}
 			}
 			
-			if(protectorBlock != null){
+			if(removeProtections){
 				ChunkSerializable cs = new ChunkSerializable(protectorBlock.getLocation()); 
 				Memory.ProtectorBlocks.remove(cs); 
 				LightAPI.deleteLight(protectorBlock.getLocation(), true); 
