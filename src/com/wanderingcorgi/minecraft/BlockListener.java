@@ -130,10 +130,17 @@ public class BlockListener implements Listener {
 	@EventHandler
     public void onInteractEvent(PlayerInteractEvent event) {
 
-    	Player player = event.getPlayer(); 
-        Action action = event.getAction();
-        Block block = event.getClickedBlock(); 
+        Player player = event.getPlayer(); 
+        if(player == null)
+        	return; 
         
+    	User user = User.FromUUID(player.getUniqueId());
+    	if(user == null)
+    		return; 
+    	
+    	Block block = event.getClickedBlock();
+    	Action action = event.getAction();
+    	
         if (action == Action.LEFT_CLICK_BLOCK) {
         	ItemStack itemInHand = player.getItemInHand();
         	if(itemInHand == null || Tools.contains(itemInHand.getType()) || block.getType() == Material.AIR)
@@ -145,6 +152,11 @@ public class BlockListener implements Listener {
         	
         	if(block.getType() == Material.PISTON_EXTENSION || block.getType() == Material.PISTON_MOVING_PIECE)
         		return;
+        	
+        	if(!user.ReinforceMode){
+            	player.sendMessage(String.format("§7[durability: %s] (+%s) To reinforce further, use /b reinforce and left click this block with a special item in hand.", Memory.GetDurability(block), worth));
+        		return; 
+        	}
         	
         	int oldAmount = itemInHand.getAmount();
         	int newAmount = oldAmount - 1; 
@@ -174,7 +186,6 @@ public class BlockListener implements Listener {
             		return; 
         	}
         		
-        	User user = User.FromUUID(player.getUniqueId()); 
         	if(user == null || user.BoardName == null || !user.BoardName.equals(doorBoardOwner)){
         		player.sendMessage(String.format("/%s/ owns this door! You must destroy it to pass.", doorBoardOwner));
         		event.setCancelled(true);

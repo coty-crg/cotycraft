@@ -29,6 +29,7 @@ public class User implements Serializable {
 	public String BoardName; 
 	public Rank BoardRank; 
 	public Chat ChatMode; 
+	public boolean ReinforceMode = false; 
 	
 	public User(UUID id){
 		this.Id = id;

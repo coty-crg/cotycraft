@@ -470,6 +470,19 @@ public class Commands implements CommandExecutor  {
 			}
 		}));
 		
+		CommandList.add(new BoardCommand("reinforce", "", "Toggles reinforcement via left click on and off. The level of reinforcement applied to a block depends on the item in your hand.", new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	user.ReinforceMode = !user.ReinforceMode; 
+            	
+            	if(user.ReinforceMode)
+            		sender.sendMessage("You can now reinforce blocks by left clicking them!");
+            	else
+            		sender.sendMessage("Reinforcement via left click is now temporarily disabled.");
+			}
+		}));
+		
 		CommandList.add(new BoardCommand("admin", "player", "Gives ownership of the board to the specified player.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
