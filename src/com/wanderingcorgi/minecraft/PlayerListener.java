@@ -97,6 +97,7 @@ public class PlayerListener implements Listener {
 
 	private final String BoardChatPrefix = String.format(" %s[board] ", RelationColor.Faction); 
 	private final String AllyChatPrefix = String.format(" %s[ally] ", RelationColor.Ally); 
+	private final String TruceChatPrefix = String.format(" %s[truce] ", RelationColor.Truce); 
 	private final String AdminPrefix = "**";
 	private final String ModPrefix = "*"; 
 	private final String NormiePrefix = ""; 
@@ -117,8 +118,6 @@ public class PlayerListener implements Listener {
 		
 		//loop through everyone on the server, to set appropriate colors and decide whether or not they can hear it
 		Set<Player> listeners = event.getRecipients();
-		boolean displayFactionPrefix = false; 
-		boolean displayAllyPrefix = false; 
 		for(Player listener : listeners){
 			User listenUser = User.FromUUID(listener.getUniqueId()); 
 			
@@ -126,7 +125,7 @@ public class PlayerListener implements Listener {
 			String relationColor = RelationColor.FromRelation(relation); 
 			
 			// faction chat? 
-			displayFactionPrefix = false; 
+			boolean displayFactionPrefix = false; 
 			if(user.HasBoard() && user.ChatMode == Chat.Board){
 				if(relation != Relation.Faction)
 					continue; 
@@ -135,7 +134,7 @@ public class PlayerListener implements Listener {
 			}
 			
 			// ally chat? 
-			displayAllyPrefix = false; 
+			boolean displayAllyPrefix = false; 
 			if(user.HasBoard() && user.ChatMode == Chat.Ally){
 				if(relation != Relation.Ally && relation != Relation.Faction)
 					continue; 
@@ -143,10 +142,20 @@ public class PlayerListener implements Listener {
 				displayAllyPrefix = true; 
 			}
 			
+			// truce chat? 
+			boolean displayTrucePrefix = false; 
+			if(user.HasBoard() && user.ChatMode == Chat.Truce){
+				if(relation != Relation.Truce && relation != Relation.Faction)
+					continue; 
+				
+				displayTrucePrefix = true; 
+			}
+			
 			// color [rank stars] /board/ (color name): message 
-			String message = String.format("%s%s%s%s%s/%s/ §b(%s%s§b)§f: %s",
+			String message = String.format("%s%s%s%s%s%s/%s/ §b(%s%s§b)§f: %s",
 							displayAllyPrefix ? AllyChatPrefix : NormiePrefix,
 							displayFactionPrefix ? BoardChatPrefix : NormiePrefix,
+							displayTrucePrefix ? TruceChatPrefix : NormiePrefix,
 							relationColor,
 							user.BoardRank == Rank.Admin ? AdminPrefix : NormiePrefix,
 							user.BoardRank == Rank.Mod ? ModPrefix : NormiePrefix, 

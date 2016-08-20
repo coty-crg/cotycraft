@@ -14,14 +14,15 @@ public class User implements Serializable {
 	}
 	
 	public enum Chat {
-		Global, Board, Ally
+		Global, Board, Ally, Truce
 	}
 	
 	public enum Relation {
 		Neutral, 
 		Faction,
 		Ally, 
-		Enemy
+		Enemy,
+		Truce
 	}
 	
 	public LocationSerializable Home; 
@@ -64,9 +65,12 @@ public class User implements Serializable {
 		
 		Board ourBoard = Board.FromName(BoardName); 
 		Board otherBoard = Board.FromName(otherUser.BoardName); 
-		
+
 		if(ourBoard.Allies.contains(otherUser.BoardName) && otherBoard.Allies.contains(ourBoard.Name))
 			return Relation.Ally; 
+		
+		if(ourBoard.Truce.contains(otherUser.BoardName) && otherBoard.Truce.contains(ourBoard.Name))
+			return Relation.Truce; 
 		
 		if(ourBoard.Enemies.contains(otherUser.BoardName) || otherBoard.Enemies.contains(ourBoard.Name))
 			return Relation.Enemy; 
@@ -87,6 +91,9 @@ public class User implements Serializable {
 		
 		if(ourBoard.Allies.contains(otherBoardName) && otherBoard.Allies.contains(ourBoard.Name))
 			return Relation.Ally; 
+		
+		if(ourBoard.Truce.contains(otherBoardName) && otherBoard.Truce.contains(ourBoard.Name))
+			return Relation.Truce; 
 		
 		if(ourBoard.Enemies.contains(otherBoardName) || otherBoard.Enemies.contains(ourBoard.Name))
 			return Relation.Enemy; 

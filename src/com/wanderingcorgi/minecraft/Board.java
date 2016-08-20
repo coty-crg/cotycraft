@@ -19,12 +19,13 @@ public class Board implements Serializable {
 	public String Name = "";
 	public LocationSerializable Home = null; 
 	public List<UUID> Members = new ArrayList<UUID>(); 
-	public List<UUID> Admins = new ArrayList<UUID>(); 
+	public List<UUID> Admins = new ArrayList<UUID>();
 	public List<UUID> Mods = new ArrayList<UUID>(); 
 	public List<UUID> InvitedMembers = new ArrayList<UUID>(); 
 
 	public List<String> Enemies = new ArrayList<String>(); 
 	public List<String> Allies = new ArrayList<String>(); 
+	public List<String> Truce = new ArrayList<String>(); 
 	
 	public boolean Open = false; 
 	
@@ -134,6 +135,9 @@ public class Board implements Serializable {
 		
 		if(Allies.contains(otherBoard.Name) && otherBoard.Allies.contains(Name))
 			return Relation.Ally; 
+
+		if(Truce.contains(otherBoard.Name) && otherBoard.Truce.contains(Name))
+			return Relation.Truce; 
 		
 		if(Enemies.contains(otherBoard.Name) || otherBoard.Enemies.contains(Name))
 			return Relation.Enemy; 

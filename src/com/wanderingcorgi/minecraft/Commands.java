@@ -218,9 +218,11 @@ public class Commands implements CommandExecutor  {
             	}
             	
             	board.Enemies.add(otherFactionName); 
-            	board.Allies.remove(otherFactionName); 
+            	board.Allies.remove(otherFactionName);
+            	board.Truce.remove(otherFactionName); 
             	otherBoard.Enemies.add(board.Name); 
             	otherBoard.Allies.remove(board.Name); 
+            	otherBoard.Truce.remove(board.Name); 
             	
             	board.MessageMembers(String.format("§c%s has notified /%s/ that you are now enemies!", player.getDisplayName(), otherFactionName));
             	otherBoard.MessageMembers(String.format("§c/%s/ has declared war! They are now your enemy.", board.Name));
@@ -295,6 +297,7 @@ public class Commands implements CommandExecutor  {
             	
             	board.Allies.add(otherFactionName); 
             	board.Enemies.remove(otherFactionName); 
+            	board.Truce.remove(otherFactionName); 
 
             	boolean acceptingAllyRequest = board.GetRelation(otherBoard) == Relation.Ally;  
             	if(acceptingAllyRequest){
@@ -305,6 +308,88 @@ public class Commands implements CommandExecutor  {
             	
             	board.MessageMembers(String.format("§d%s has sent an ally request to /%s/!", player.getDisplayName(), otherFactionName));
             	otherBoard.MessageMembers(String.format("§d/%s/ has sent an ally request! Do /b ally %s to accept!", board.Name, board.Name));
+            	
+            	// refresh names for players 
+            	for(UUID memberId : board.Members){
+            		Player member = Bukkit.getPlayer(memberId);
+            		if(member == null) continue;             		
+            		TagAPI.refreshPlayer(member);
+            	}
+            	
+            	for(UUID memberId : otherBoard.Members){
+            		Player member = Bukkit.getPlayer(memberId);
+            		if(member == null) continue;             		
+            		TagAPI.refreshPlayer(member);
+            	}
+			}
+		}));
+		
+		CommandList.add(new BoardCommand("truce", "board", "Requests or confirms a truce with the specified board.", new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+				if(arguments.length == 1){
+            		sender.sendMessage("§cPlease specify a board! Example: /b truce tg");
+            		return; 
+            	}
+				
+            	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	if(!user.HasBoard()){
+            		sender.sendMessage("§cYou are not in a board!");
+            		return; 
+            	}
+            	
+        		Board board = Board.FromName(user.BoardName); 
+            	
+            	if(board == null){
+            		sender.sendMessage(String.format("§c/%s/ not found?!", user.BoardName));
+            		return; 
+            	}
+            	
+            	if(user.BoardRank != Rank.Admin && user.BoardRank != Rank.Mod){
+            		sender.sendMessage(String.format("§cYou are not a mod or admin of /%s/!", board.Name));
+            		return; 
+            	}
+
+            	String otherFactionName = arguments[1]; 
+            	Board otherBoard = Board.FromName(otherFactionName); 
+            	
+            	if(otherBoard == null){
+            		sender.sendMessage("§cThat faction doesn't exist!");
+            		return; 
+            	}
+            	
+            	boolean alreadyAllies = board.GetRelation(otherBoard) == Relation.Truce; 
+            	if(alreadyAllies){
+                	sender.sendMessage(String.format("§dYour faction is already in a truce with /%s/", otherFactionName));
+            		return; 
+            	}
+            	
+            	boolean alreadyRequestedAwaitingResponse = board.Truce.contains(otherFactionName); 
+            	if(alreadyRequestedAwaitingResponse){
+            		sender.sendMessage("§dYour faction is still awaiting a response!");
+            		return; 
+            	}
+            	
+            	if(user.BoardName.equals(otherFactionName)){
+            		sender.sendMessage(String.format("§cYou cannot be in a relationship with yourself!"));
+            		return; 
+            	}
+            	
+            	board.Truce.add(otherFactionName); 
+            	board.Allies.remove(otherFactionName);
+            	board.Enemies.remove(otherFactionName); 
+
+            	boolean acceptingTruceRequest = board.GetRelation(otherBoard) == Relation.Truce;  
+            	if(acceptingTruceRequest){
+                	board.MessageMembers(String.format("§d%s has accepted /%s/'s truce request!", player.getDisplayName(), otherFactionName));
+                	otherBoard.MessageMembers(String.format("§d/%s/ has accepted your truce request!", board.Name));
+            		return; 
+            	}
+            	
+            	board.MessageMembers(String.format("§d%s has sent an truce request to /%s/!", player.getDisplayName(), otherFactionName));
+            	otherBoard.MessageMembers(String.format("§d/%s/ has sent an truce request! Do /b truce %s to accept!", board.Name, board.Name));
             	
             	// refresh names for players 
             	for(UUID memberId : board.Members){
@@ -440,6 +525,12 @@ public class Commands implements CommandExecutor  {
 	                		sender.sendMessage("§dNow in Ally chat.");
 	                		return; 
 
+	            		case "t":
+	            		case "truce":
+	                		user.ChatMode = Chat.Truce; 
+	                		sender.sendMessage("§eNow in Truce chat.");
+	                		return; 
+	                		
 	            		case "f":
 	            		case "faction":
 	            		case "b":
@@ -463,6 +554,12 @@ public class Commands implements CommandExecutor  {
             	}
 
             	if(user.ChatMode == Chat.Ally){
+            		user.ChatMode = Chat.Truce; 
+            		sender.sendMessage("§eNow in Truce chat.");
+            		return; 
+            	}
+            	
+            	if(user.ChatMode == Chat.Truce){
             		user.ChatMode = Chat.Global; 
             		sender.sendMessage("§fNow in Global chat.");
             		return; 
