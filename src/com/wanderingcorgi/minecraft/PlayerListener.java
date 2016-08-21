@@ -110,14 +110,20 @@ public class PlayerListener implements Listener {
 		Board board = Board.FromName(user.BoardName); 
 		
 		String Message = event.getMessage().replace(">", "§a>");; 
+
+		Set<Player> listeners = event.getRecipients();
 		
 		if(board == null) {
-			event.setMessage(Message);
+			for(Player listener : listeners){
+				String finalMessage = String.format("§b(§f%s§b)§f: %s", playerName, Message); 
+				listener.sendMessage(finalMessage);
+			}
+
+			event.setCancelled(true);
 			return; 
 		}
 		
 		//loop through everyone on the server, to set appropriate colors and decide whether or not they can hear it
-		Set<Player> listeners = event.getRecipients();
 		for(Player listener : listeners){
 			User listenUser = User.FromUUID(listener.getUniqueId()); 
 			
