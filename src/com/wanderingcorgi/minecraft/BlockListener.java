@@ -152,7 +152,7 @@ public class BlockListener implements Listener {
 		boolean IsWater = t == Material.WATER || t == Material.WATER_BUCKET || t == Material.STATIONARY_WATER; 
 		boolean IsLava = t == Material.LAVA || t == Material.LAVA_BUCKET || t == Material.STATIONARY_LAVA;
 		boolean IsProtectionBlock = t == Memory.ProtectorBlock; 
-		if(IsWater || IsLava){
+		if(IsWater || IsLava || IsProtectionBlock){
 			event.setCancelled(true);
 			return; 
 		}
