@@ -20,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
@@ -28,6 +29,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -127,6 +129,37 @@ public class BlockListener implements Listener {
 		int durability = Memory.GetDurability(targetBlock); 
 		if(durability > 0 || targetBlock.getType() == Material.REDSTONE_TORCH_OFF || targetBlock.getType() == Material.REDSTONE_TORCH_ON){
 			event.setCancelled(true);
+			Bukkit.getConsoleSender().sendMessage("test");
+			return; 
+		}
+	}
+	
+	@EventHandler 
+	public void OnBlockDispenseEvent(BlockDispenseEvent event){
+		Material t = event.getItem().getType(); 
+		boolean IsWater = t == Material.WATER || t == Material.WATER_BUCKET || t == Material.STATIONARY_WATER; 
+		boolean IsLava = t == Material.LAVA || t == Material.LAVA_BUCKET || t == Material.STATIONARY_LAVA;
+		if(IsWater || IsLava){
+			event.setCancelled(true);
+			return; 
+		}
+	}
+	
+	@EventHandler 
+	public void OnEntityChangeBlockEvent (EntityChangeBlockEvent event){
+		Block block = event.getBlock(); 
+		Material t = block.getType(); 
+		boolean IsWater = t == Material.WATER || t == Material.WATER_BUCKET || t == Material.STATIONARY_WATER; 
+		boolean IsLava = t == Material.LAVA || t == Material.LAVA_BUCKET || t == Material.STATIONARY_LAVA;
+		boolean IsProtectionBlock = t == Memory.ProtectorBlock; 
+		if(IsWater || IsLava){
+			event.setCancelled(true);
+			return; 
+		}
+		
+		boolean IsReinforced = Memory.GetDurability(block) > 1;
+		if(IsReinforced){
+			event.setCancelled(true);
 			return; 
 		}
 	}
@@ -176,6 +209,19 @@ public class BlockListener implements Listener {
         }
         
         if(action == Action.RIGHT_CLICK_BLOCK){
+        	if(block.getType() == Material.REDSTONE_TORCH_OFF || block.getType() == Material.REDSTONE_TORCH_ON){
+        		event.setCancelled(true);
+        		return; 
+        	}
+        	
+        	BlockFace face = event.getBlockFace(); 
+        	Block relativeBlock = block.getRelative(face); 
+        	
+        	if(relativeBlock.getType() == Material.REDSTONE_TORCH_OFF || relativeBlock.getType() == Material.REDSTONE_TORCH_ON){
+        		event.setCancelled(true);
+        		return; 
+        	}
+        	
         	if(!IsDoor(block.getType()))
         		return;
         	
