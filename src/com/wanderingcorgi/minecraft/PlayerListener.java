@@ -96,11 +96,11 @@ public class PlayerListener implements Listener {
 	    	player.setPlayerListName( String.format("/%s/%s", user.BoardName, player.getDisplayName()) );
 	}
 
-	private final String BoardChatPrefix = String.format(" %s[board] ", RelationColor.Faction); 
-	private final String AllyChatPrefix = String.format(" %s[ally] ", RelationColor.Ally); 
-	private final String TruceChatPrefix = String.format(" %s[truce] ", RelationColor.Truce); 
-	private final String EnemyChatPrefix = String.format(" %s[enemy] ", RelationColor.Enemy); 
-	private final String LocalChatPrefix = String.format(" %s[local] ", RelationColor.Local); 
+	private final String BoardChatPrefix = String.format("%s[board]", RelationColor.Faction); 
+	private final String AllyChatPrefix = String.format("%s[ally]", RelationColor.Ally); 
+	private final String TruceChatPrefix = String.format("%s[truce]", RelationColor.Truce); 
+	private final String EnemyChatPrefix = String.format("%s[enemy]", RelationColor.Enemy); 
+	private final String LocalChatPrefix = String.format("%s[local]", RelationColor.Local); 
 	private final String AdminPrefix = "**";
 	private final String ModPrefix = "*"; 
 	private final String NormiePrefix = ""; 
@@ -124,6 +124,7 @@ public class PlayerListener implements Listener {
 				listener.sendMessage(finalMessage);
 			}
 
+			Bukkit.getConsoleSender().sendMessage(String.format("(%s): %s", player.getDisplayName(), Message));
 			event.setCancelled(true);
 			return; 
 		}
@@ -134,60 +135,49 @@ public class PlayerListener implements Listener {
 			
 			Relation relation = listenUser.GetRelation(user);  
 			String relationColor = RelationColor.FromRelation(relation); 
+			String prefix = NormiePrefix; 
 			
-			// faction chat? 
-			boolean displayFactionPrefix = false; 
-			if(user.HasBoard() && user.ChatMode == Chat.Board){
-				if(relation != Relation.Faction)
-					continue; 
+			if(user.HasBoard()){
+				if(user.ChatMode == Chat.Board){
+					if(relation != Relation.Faction)
+						continue; 
+					
+					prefix = BoardChatPrefix; 
+				}
 				
-				displayFactionPrefix = true; 
-			}
-			
-			// ally chat? 
-			boolean displayAllyPrefix = false; 
-			if(user.HasBoard() && user.ChatMode == Chat.Ally){
-				if(relation != Relation.Ally && relation != Relation.Faction)
-					continue; 
-				
-				displayAllyPrefix = true; 
-			}
-			
-			// truce chat? 
-			boolean displayTrucePrefix = false; 
-			if(user.HasBoard() && user.ChatMode == Chat.Truce){
-				if(relation != Relation.Truce && relation != Relation.Faction)
-					continue; 
-				
-				displayTrucePrefix = true; 
-			}
+				if(user.ChatMode == Chat.Ally){
+					if(relation != Relation.Ally && relation != Relation.Faction)
+						continue; 
+					
+					prefix = AllyChatPrefix; 
+				}
 
-			// enemy chat? 
-			boolean displayEnemyPrefix = false; 
-			if(user.HasBoard() && user.ChatMode == Chat.Enemy){
-				if(relation != Relation.Enemy && relation != Relation.Faction)
-					continue; 
+				if(user.ChatMode == Chat.Truce){
+					if(relation != Relation.Truce && relation != Relation.Faction)
+						continue; 
+					
+					prefix = TruceChatPrefix; 
+				}
 				
-				displayEnemyPrefix = true; 
-			}
-			
-			// local chat? 
-			boolean displayLocalPrefix = false; 
-			if(user.ChatMode == Chat.Local){
-				Location listenerLocation = listener.getLocation(); 
-				if(playerLocation.distance(listenerLocation) > 80)
-					continue; 
+				if(user.ChatMode == Chat.Enemy){
+					if(relation != Relation.Enemy && relation != Relation.Faction)
+						continue;
+					
+					prefix = EnemyChatPrefix; 
+				}
 				
-				displayLocalPrefix = true; 
+				if(user.ChatMode == Chat.Local){
+					Location listenerLocation = listener.getLocation(); // uses a sqrt, so its slow 
+					if(playerLocation.distance(listenerLocation) > 80)
+						continue; 
+					
+					prefix = LocalChatPrefix; 
+				}
 			}
 			
 			// color [rank stars] /board/ (color name): message 
-			String message = String.format("%s%s%s%s%s%s%s%s/%s/ §b(%s%s§b)§f: %s",
-							displayAllyPrefix ? AllyChatPrefix : NormiePrefix,
-							displayFactionPrefix ? BoardChatPrefix : NormiePrefix,
-							displayTrucePrefix ? TruceChatPrefix : NormiePrefix,
-							displayEnemyPrefix ? EnemyChatPrefix : NormiePrefix,
-							displayLocalPrefix ? LocalChatPrefix : NormiePrefix,
+			String message = String.format("%s %s%s%s/%s/ §b(%s%s§b)§f: %s",
+							prefix,
 							relationColor,
 							user.BoardRank == Rank.Admin ? AdminPrefix : NormiePrefix,
 							user.BoardRank == Rank.Mod ? ModPrefix : NormiePrefix, 
@@ -198,7 +188,8 @@ public class PlayerListener implements Listener {
 			
 			listener.sendMessage(message);
 		}
-
+		
+		Bukkit.getConsoleSender().sendMessage(String.format("[%s] /%s/ (%s): %s", user.ChatMode, user.BoardName, player.getDisplayName(), Message));
 		event.setCancelled(true);
 	}
 	
