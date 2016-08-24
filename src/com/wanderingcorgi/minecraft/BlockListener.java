@@ -260,7 +260,7 @@ public class BlockListener implements Listener {
 			return; 
 		}
 		
-		boolean actuallyBreak = Memory.BlockBroken(block, 1);
+		boolean actuallyBreak = Memory.BlockBroken(block, 1, null);
 		if(actuallyBreak) 
 			return; 
 		
@@ -284,7 +284,7 @@ public class BlockListener implements Listener {
 		if(durabilityLeft > 1)
 			event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft - 1));
 		
-		boolean actuallyBreak = Memory.BlockBroken(block, 1);
+		boolean actuallyBreak = Memory.BlockBroken(block, 1, event.getPlayer());
 		if(actuallyBreak) 
 			return; 
 		
@@ -335,12 +335,12 @@ public class BlockListener implements Listener {
 		
 		for(Block block : blockList){
 			if(event.blockList().contains( block )) continue;
-			Memory.BlockBroken(block, damage);
+			Memory.BlockBroken(block, damage, null);
 		}
 		
 		List<Block> originalList = new ArrayList<Block>(event.blockList()); 
 		for(Block block : originalList){
-			boolean actuallyBreak = Memory.BlockBroken(block, damage);
+			boolean actuallyBreak = Memory.BlockBroken(block, damage, null);
 			if(actuallyBreak)
 				continue; 
 			
@@ -370,7 +370,8 @@ public class BlockListener implements Listener {
 		
 		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
 		if(Memory.ProtectorBlocks.containsKey(thisChunk)){
-			String ownerBoardName =  Memory.ProtectorBlocks.get(thisChunk); 
+			ProtectionBlockData protectionBlockData = Memory.ProtectorBlocks.get(thisChunk); 
+			String ownerBoardName = protectionBlockData.BoardName; 		
 			if(user.BoardName == null || !user.BoardName.equals(ownerBoardName)){
 				String relationColor = RelationColor.FromRelation(user.GetRelation(ownerBoardName)); 
 				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! Chunk protected by: %s/%s/", relationColor, ownerBoardName));
@@ -391,17 +392,21 @@ public class BlockListener implements Listener {
 				return; 
 			}
 			
-			ChunkSerializable ls = new ChunkSerializable(relative.getLocation()); 
+			ChunkSerializable cs = new ChunkSerializable(relative.getLocation()); 
 			
-			boolean exists = Memory.ProtectorBlocks.containsKey(ls);
+			boolean exists = Memory.ProtectorBlocks.containsKey(cs);
 			if(exists){
 				player.sendMessage("There is already a protector rune in this chunk!");
 				event.setCancelled(true);
 				return;
 			}
-			
+
 			player.sendMessage("Protector rune has been activated!");
-			Memory.ProtectorBlocks.put(ls, user.BoardName);
+			
+			LocationSerializable ls = new LocationSerializable(relative.getLocation()); 
+			ProtectionBlockData protectionBlockData = new ProtectionBlockData(user.BoardName, ls);  
+			Memory.ProtectorBlocks.put(cs, protectionBlockData);
+			
 			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 
 		} 
@@ -418,17 +423,21 @@ public class BlockListener implements Listener {
 				return; 
 			}
 			
-			ChunkSerializable ls = new ChunkSerializable(block.getLocation()); 
+			ChunkSerializable cs = new ChunkSerializable(block.getLocation()); 
 			
-			boolean exists = Memory.ProtectorBlocks.containsKey(ls);
+			boolean exists = Memory.ProtectorBlocks.containsKey(cs);
 			if(exists){
 				player.sendMessage("There is already a protector rune in this chunk!");
 				event.setCancelled(true);
 				return;
 			}
-
+			
 			player.sendMessage("Protector rune has been activated!");
-			Memory.ProtectorBlocks.put(ls, user.BoardName);
+			
+			LocationSerializable ls = new LocationSerializable(block.getLocation()); 
+			ProtectionBlockData protectionBlockData = new ProtectionBlockData(user.BoardName, ls);  
+			Memory.ProtectorBlocks.put(cs, protectionBlockData);
+			
 			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 
 		}

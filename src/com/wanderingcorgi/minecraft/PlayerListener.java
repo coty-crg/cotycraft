@@ -42,7 +42,8 @@ public class PlayerListener implements Listener {
 		Block block = event.getBlockClicked();
 		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
 		if(Memory.ProtectorBlocks.containsKey(thisChunk)){
-			String ownerBoardName =  Memory.ProtectorBlocks.get(thisChunk); 
+			ProtectionBlockData protectionBlockData =  Memory.ProtectorBlocks.get(thisChunk); 
+			String ownerBoardName = protectionBlockData.BoardName; 
 			
 			Player player = event.getPlayer();
 			

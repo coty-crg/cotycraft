@@ -20,13 +20,14 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 
 import com.google.common.io.Files;
 
 import ru.beykerykt.lightapi.LightAPI;
 
 public class Memory {
-
+	
 	// <location of block, durability of that block> 
 	protected static HashMap<LocationSerializable, Integer> Universe = new HashMap<LocationSerializable, Integer>(); 
 	
@@ -37,7 +38,7 @@ public class Memory {
 	protected static HashMap<LocationSerializable, String> Doors = new HashMap<LocationSerializable, String>();
 	
 	// <chunk protected, date protected since> 
-	protected static HashMap<ChunkSerializable, String> ProtectorBlocks = new HashMap<ChunkSerializable, String>();
+	protected static HashMap<ChunkSerializable, ProtectionBlockData> ProtectorBlocks = new HashMap<ChunkSerializable, ProtectionBlockData>();
 	
 	// <board name, board data> 
 	protected static HashMap<String, Board> Boards = new HashMap<String, Board>();
@@ -115,7 +116,7 @@ public class Memory {
 	}
 	
 	// returns true if we really want to destroy the block 
-	public static boolean BlockBroken(Block block, int power){		
+	public static boolean BlockBroken(Block block, int power, Player player){		
 		DecreaseDurability(block, power); 
 		int durability = GetDurability(block);
 		
@@ -137,10 +138,20 @@ public class Memory {
 			boolean removeProtections = false;
 			Block protectorBlock = null; // the iron block 
 			
+			
 			boolean IsProtectorBlock = blockType == ProtectorBlock; 
 			if(IsProtectorBlock){
 				Block relative = block.getRelative(BlockFace.UP);
-				if(relative.getType() == Material.REDSTONE_TORCH_ON || relative.getType() == Material.REDSTONE_TORCH_OFF){
+
+				boolean matchingLocation = false; 
+				ChunkSerializable cs = new ChunkSerializable(block.getLocation());
+				ProtectionBlockData pbd = Memory.ProtectorBlocks.get(cs);
+				if(pbd != null){
+					LocationSerializable ls = new LocationSerializable(block.getLocation()); 
+					matchingLocation = pbd.Location.equals(ls); 
+				}
+				
+				if(relative.getType() == Material.REDSTONE_TORCH_ON || relative.getType() == Material.REDSTONE_TORCH_OFF || matchingLocation){
 					protectorBlock = block; 					
 					removeProtections = true; 
 				}
@@ -149,7 +160,16 @@ public class Memory {
 			boolean IsRedstoneTorch = blockType == Material.REDSTONE_TORCH_ON || blockType == Material.REDSTONE_TORCH_OFF; 
 			if(IsRedstoneTorch){
 				Block relative = block.getRelative(BlockFace.DOWN);
-				if(relative.getType() == ProtectorBlock){
+				
+				boolean matchingLocation = false; 
+				ChunkSerializable cs = new ChunkSerializable(relative.getLocation());
+				ProtectionBlockData pbd = Memory.ProtectorBlocks.get(cs);
+				if(pbd != null){
+					LocationSerializable ls = new LocationSerializable(relative.getLocation()); 
+					matchingLocation = pbd.Location.equals(ls); 
+				}
+				
+				if(relative.getType() == ProtectorBlock || matchingLocation){
 					protectorBlock = relative; 					
 					removeProtections = true; 
 				}
@@ -159,6 +179,8 @@ public class Memory {
 				ChunkSerializable cs = new ChunkSerializable(protectorBlock.getLocation()); 
 				Memory.ProtectorBlocks.remove(cs); 
 				LightAPI.deleteLight(protectorBlock.getLocation(), true); 
+				if(player != null)
+					player.sendMessage(String.format("Removed protection rune!"));
 				return true; 
 			}
 		}
@@ -267,7 +289,7 @@ public class Memory {
 	public static void LoadProtectorData() throws IOException, ClassNotFoundException{
 		FileInputStream fileIn = new FileInputStream(Main.dataFolder + "/saves/ProtectorBlocks.sav");
         ObjectInputStream in = new ObjectInputStream(fileIn);
-        ProtectorBlocks = ( HashMap<ChunkSerializable, String> ) in.readObject();
+        ProtectorBlocks = ( HashMap<ChunkSerializable, ProtectionBlockData> ) in.readObject();
         in.close();
         fileIn.close();
 	}
