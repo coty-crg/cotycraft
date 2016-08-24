@@ -129,7 +129,6 @@ public class BlockListener implements Listener {
 		int durability = Memory.GetDurability(targetBlock); 
 		if(durability > 0 || targetBlock.getType() == Material.REDSTONE_TORCH_OFF || targetBlock.getType() == Material.REDSTONE_TORCH_ON){
 			event.setCancelled(true);
-			Bukkit.getConsoleSender().sendMessage("test");
 			return; 
 		}
 	}
