@@ -4,7 +4,8 @@ import com.wanderingcorgi.minecraft.User.Relation;
 
 public class RelationColor {
 
-	public static String Truce = "§e"; 
+	public static String Truce = "§e";
+	public static String Local = "§7";
 	// public static String War = "§4";
 	// public static String Peaceful = "§6";
 	public static String Neutral = "§f";

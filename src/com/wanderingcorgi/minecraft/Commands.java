@@ -557,6 +557,18 @@ public class Commands implements CommandExecutor  {
 	                		user.ChatMode = Chat.Board; 
 	                		sender.sendMessage("§aNow in board-only chat.");
 	                		return; 
+
+	            		case "e":
+	            		case "enemy":
+	                		user.ChatMode = Chat.Enemy; 
+	                		sender.sendMessage("§cNow in Enemy chat.");
+	                		return; 
+	                		
+	            		case "l":
+	            		case "local":
+	                		user.ChatMode = Chat.Local; 
+	                		sender.sendMessage("§7Now in Local chat. Only those close to you can hear you!");
+	                		return; 
             		}
             	}
             	
@@ -579,6 +591,18 @@ public class Commands implements CommandExecutor  {
             	}
             	
             	if(user.ChatMode == Chat.Truce){
+            		user.ChatMode = Chat.Enemy; 
+            		sender.sendMessage("§fNow in Enemy chat.");
+            		return; 
+            	}
+            	
+            	if(user.ChatMode == Chat.Enemy){
+            		user.ChatMode = Chat.Local; 
+            		sender.sendMessage("§fNow in Local chat.");
+            		return; 
+            	}
+            	
+            	if(user.ChatMode == Chat.Local){
             		user.ChatMode = Chat.Global; 
             		sender.sendMessage("§fNow in Global chat.");
             		return; 

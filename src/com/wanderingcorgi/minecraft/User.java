@@ -14,7 +14,7 @@ public class User implements Serializable {
 	}
 	
 	public enum Chat {
-		Global, Board, Ally, Truce
+		Global, Board, Ally, Truce, Enemy, Local
 	}
 	
 	public enum Relation {

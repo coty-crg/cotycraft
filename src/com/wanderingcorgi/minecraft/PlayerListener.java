@@ -99,13 +99,17 @@ public class PlayerListener implements Listener {
 	private final String BoardChatPrefix = String.format(" %s[board] ", RelationColor.Faction); 
 	private final String AllyChatPrefix = String.format(" %s[ally] ", RelationColor.Ally); 
 	private final String TruceChatPrefix = String.format(" %s[truce] ", RelationColor.Truce); 
+	private final String EnemyChatPrefix = String.format(" %s[enemy] ", RelationColor.Enemy); 
+	private final String LocalChatPrefix = String.format(" %s[local] ", RelationColor.Local); 
 	private final String AdminPrefix = "**";
 	private final String ModPrefix = "*"; 
 	private final String NormiePrefix = ""; 
 	
 	@EventHandler
 	public void AsyncPlayerChatEvent(AsyncPlayerChatEvent event){
-		UUID playerId = event.getPlayer().getUniqueId(); 
+		Player player = event.getPlayer(); 
+		Location playerLocation = player.getLocation(); 
+		UUID playerId = player.getUniqueId(); 
 		String playerName = event.getPlayer().getName(); 
 		User user = User.FromUUID(playerId); 
 		Board board = Board.FromName(user.BoardName); 
@@ -157,12 +161,33 @@ public class PlayerListener implements Listener {
 				
 				displayTrucePrefix = true; 
 			}
+
+			// enemy chat? 
+			boolean displayEnemyPrefix = false; 
+			if(user.HasBoard() && user.ChatMode == Chat.Enemy){
+				if(relation != Relation.Enemy && relation != Relation.Faction)
+					continue; 
+				
+				displayEnemyPrefix = true; 
+			}
+			
+			// local chat? 
+			boolean displayLocalPrefix = false; 
+			if(user.ChatMode == Chat.Local){
+				Location listenerLocation = listener.getLocation(); 
+				if(playerLocation.distance(listenerLocation) > 80)
+					continue; 
+				
+				displayLocalPrefix = true; 
+			}
 			
 			// color [rank stars] /board/ (color name): message 
-			String message = String.format("%s%s%s%s%s%s/%s/ §b(%s%s§b)§f: %s",
+			String message = String.format("%s%s%s%s%s%s%s%s/%s/ §b(%s%s§b)§f: %s",
 							displayAllyPrefix ? AllyChatPrefix : NormiePrefix,
 							displayFactionPrefix ? BoardChatPrefix : NormiePrefix,
 							displayTrucePrefix ? TruceChatPrefix : NormiePrefix,
+							displayEnemyPrefix ? EnemyChatPrefix : NormiePrefix,
+							displayLocalPrefix ? LocalChatPrefix : NormiePrefix,
 							relationColor,
 							user.BoardRank == Rank.Admin ? AdminPrefix : NormiePrefix,
 							user.BoardRank == Rank.Mod ? ModPrefix : NormiePrefix, 
