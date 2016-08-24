@@ -31,6 +31,7 @@ public class User implements Serializable {
 	public Rank BoardRank; 
 	public Chat ChatMode; 
 	public boolean ReinforceMode = false; 
+	public long LastTeleportMS = 0L; 
 	
 	public User(UUID id){
 		this.Id = id;

@@ -439,7 +439,17 @@ public class Commands implements CommandExecutor  {
 		CommandList.add(new BoardCommand("bed", "", "Sleeping in a bed will set your personal home. Using this command will teleport you to your bed. Note: this is different than the board's home bed.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
-            	Location bedSpawn = player.getBedSpawnLocation(); 
+            	
+				User user = User.FromUUID(player.getUniqueId()); 
+				
+				long secondsSinceLastTp = System.currentTimeMillis() / 1000 - user.LastTeleportMS / 1000; 
+				long secondsRemaining = Memory.BedTeleportCooldownSeconds - secondsSinceLastTp; 
+				if(secondsRemaining > 0){
+            		sender.sendMessage(String.format("You must wait %s seconds before you can teleport to your bed!", secondsRemaining));
+            		return; 
+				}
+				
+				Location bedSpawn = player.getBedSpawnLocation(); 
             	if(bedSpawn == null){
             		sender.sendMessage("§cYou do not have a bed! Was it destroyed?");
             		return; 
@@ -455,6 +465,7 @@ public class Commands implements CommandExecutor  {
             	
             	player.teleport(aboveBed1); 
         		sender.sendMessage("§aTeleported to your bed!");
+        		user.LastTeleportMS = System.currentTimeMillis(); 
 			}
 		}));
 		
@@ -463,6 +474,13 @@ public class Commands implements CommandExecutor  {
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
             	User user = User.FromUUID(player.getUniqueId()); 
+            	
+            	long secondsSinceLastTp = System.currentTimeMillis() / 1000 - user.LastTeleportMS / 1000; 
+				long secondsRemaining = Memory.HomeTeleportCooldownSeconds - secondsSinceLastTp; 
+				if(secondsRemaining > 0){
+            		sender.sendMessage(String.format("You must wait %s minutes before you can teleport to your board's home!", secondsRemaining / 60));
+            		return; 
+				}
             	
             	if(!user.HasBoard()){
             		sender.sendMessage("§cYou are not in a board!");
@@ -494,6 +512,7 @@ public class Commands implements CommandExecutor  {
             	
             	player.teleport(aboveBed1); 
         		sender.sendMessage("§aTeleported to your board's home!");
+        		user.LastTeleportMS = System.currentTimeMillis(); 
 			}
 		}));
 

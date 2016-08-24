@@ -79,6 +79,8 @@ public class Memory {
 	public static final Material ProtectorBlock = Material.IRON_BLOCK; 
 	public static final int MaxDurability = 1280;
 	public static final int MaxDurabilityUntilExplosionsRequired = 640; 
+	public static final long BedTeleportCooldownSeconds = 60; 
+	public static final long HomeTeleportCooldownSeconds = 60 * 60;
 	
 	public static int GetDurability(Block block){
 		Block targetBlock = block; 
