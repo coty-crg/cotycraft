@@ -105,10 +105,17 @@ public class Memory {
 		Memory.Universe.put(ls, value); 
 	}
 	
-	public static void IncreaseDurability(Block block, int amount){
+	public static boolean IncreaseDurability(Block block, int amount){
 		int durability = GetDurability(block) + amount;
-		if(durability > MaxDurability) durability = MaxDurability; 
-		SetDurability(block, durability); 
+		
+		if(durability - amount >= MaxDurability)
+			return false; 
+		
+		if(durability > MaxDurability) 
+			durability = MaxDurability;
+		
+		SetDurability(block, durability);
+		return true; 
 	}
 	
 	public static void DecreaseDurability(Block block, int amount){

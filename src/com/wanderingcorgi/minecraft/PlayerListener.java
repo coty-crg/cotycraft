@@ -109,8 +109,10 @@ public class PlayerListener implements Listener {
 	public void AsyncPlayerChatEvent(AsyncPlayerChatEvent event){
 		Player player = event.getPlayer(); 
 		Location playerLocation = player.getLocation(); 
+		
 		UUID playerId = player.getUniqueId(); 
 		String playerName = event.getPlayer().getName(); 
+		
 		User user = User.FromUUID(playerId); 
 		Board board = Board.FromName(user.BoardName); 
 		

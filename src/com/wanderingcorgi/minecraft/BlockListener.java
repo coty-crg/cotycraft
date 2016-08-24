@@ -194,17 +194,22 @@ public class BlockListener implements Listener {
         		return; 
         	}
         	
-        	int oldAmount = itemInHand.getAmount();
-        	int newAmount = oldAmount - 1; 
-        	itemInHand.setAmount(newAmount);
-        	
-        	if(newAmount <= 0){
-        		player.setItemInHand(null);
+        	boolean result = Memory.IncreaseDurability(block, worth);
+        	if(result){
+        		int oldAmount = itemInHand.getAmount();
+            	int newAmount = oldAmount - 1; 
+            	itemInHand.setAmount(newAmount);
+            	
+            	if(newAmount <= 0){
+            		player.setItemInHand(null);
+            	}
+            	
+        		player.sendMessage(String.format("§7[durability: %s (+%s)]", Memory.GetDurability(block), worth));
+        		event.setCancelled(true);
+        	}else{
+        		player.sendMessage(String.format("§7[durability: %s (MAX DURABILITY)]", Memory.GetDurability(block)));
+        		event.setCancelled(true);
         	}
-        	
-        	Memory.IncreaseDurability(block, worth);
-        	player.sendMessage(String.format("§7[durability: %s (+%s)]", Memory.GetDurability(block), worth));
-        	event.setCancelled(true);
         }
         
         if(action == Action.RIGHT_CLICK_BLOCK){
