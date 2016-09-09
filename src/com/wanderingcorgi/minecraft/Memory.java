@@ -158,23 +158,30 @@ public class Memory {
 	
 	// returns true if we really want to destroy the block 
 	public static boolean BlockBroken(Block block, int power, Player player){		
-		DecreaseDurability(block, power); 
-		int durability = GetDurability(block);
+
 		
 		
 		// CraftChunk chunk = (CraftChunk) player.getLocation().getChunk(); 
 		//player.send
 		//((CraftPlayer)player).sendBlockChange(block.getLocation(), block.getType(), (byte)0);
-		
-		
-		if(durability > 0){
-			if(BlockListener.IsDoor(block.getType())){
-				RefreshBlock(player, block); 
-				RefreshBlock(player, block.getRelative(BlockFace.DOWN)); 
-				RefreshBlock(player, block.getRelative(BlockFace.UP)); 				
-			}
+
+		// if our own block, don't lower durability 
+		User user = User.FromUUID(player.getUniqueId()); 
+		ChunkSerializable protectedChunk = new ChunkSerializable(block); 
+		ProtectionBlockData data = Memory.ProtectorBlocks.get(protectedChunk);
+		if(data == null || !data.BoardName.equals(user.BoardName)){
+			DecreaseDurability(block, power); 
+			int durability = GetDurability(block);
 			
-			return false; 
+			if(durability > 0){
+				if(BlockListener.IsDoor(block.getType())){
+					RefreshBlock(player, block); 
+					RefreshBlock(player, block.getRelative(BlockFace.DOWN)); 
+					RefreshBlock(player, block.getRelative(BlockFace.UP)); 				
+				}
+				
+				return false; 
+			}
 		}
 		
 		Material blockType = block.getType(); 

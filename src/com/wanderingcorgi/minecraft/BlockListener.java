@@ -289,19 +289,13 @@ public class BlockListener implements Listener {
 		Block block = event.getBlock();
 		int durabilityLeft = Memory.GetDurability(block);
 		
-		// users can break their own blocks 
-		ChunkSerializable cs = new ChunkSerializable(block); 
-		ProtectionBlockData data = Memory.ProtectorBlocks.get(cs);
-		if(data != null && data.BoardName.equals(user.BoardName))
-			return; 
-		
 		if(durabilityLeft > Memory.MaxDurabilityUntilExplosionsRequired){
 			int tntOnlyDurabilityRemaining = durabilityLeft - Memory.MaxDurabilityUntilExplosionsRequired; 
 			event.getPlayer().sendMessage(String.format("§c[Explosions required for another %s durability]", tntOnlyDurabilityRemaining));
 			event.setCancelled(true);
 			return; 
 		}
-
+		
 		if(durabilityLeft > 1)
 			event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft - 1));
 		
