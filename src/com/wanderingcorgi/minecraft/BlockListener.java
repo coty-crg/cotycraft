@@ -199,7 +199,7 @@ public class BlockListener implements Listener {
         		return; 
         	}
         	
-        	boolean result = Memory.IncreaseDurability(block, worth);
+        	boolean result = Memory.IncreaseDurability(block, worth, player);
         	if(result){
         		int oldAmount = itemInHand.getAmount();
             	int newAmount = oldAmount - 1; 

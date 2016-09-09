@@ -107,7 +107,7 @@ public class Memory {
     	return durability.intValue(); 
 	}
 	
-	public static void SetDurability(Block block, int value){
+	public static void SetDurability(Block block, int value, Player player){
 		Block targetBlock = block; 
 		Block blockBelow = block.getRelative(BlockFace.DOWN);
 		if(BlockListener.IsDoor(targetBlock.getType()) && BlockListener.IsDoor(blockBelow.getType())){
@@ -116,10 +116,18 @@ public class Memory {
 		
 		ChunkSerializable cs = new ChunkSerializable(targetBlock); 
 		ProtectionBlockData data = Memory.ProtectorBlocks.get(cs); 
-		data.ProtectionLevel = value;  
+		
+		if(data != null)
+			data.ProtectionLevel = value;
+		else{
+			User user = User.FromUUID(player.getUniqueId()); 
+			LocationSerializable ls = new LocationSerializable(block); 
+			ProtectionBlockData newData = new ProtectionBlockData(user.BoardName, ls);
+			Memory.ProtectorBlocks.put(cs, newData); 
+		}
 	}
 	
-	public static boolean IncreaseDurability(Block block, int amount){
+	public static boolean IncreaseDurability(Block block, int amount, Player player){
 		int durability = GetDurability(block) + amount;
 		
 		if(durability - amount >= MaxDurability)
@@ -128,14 +136,14 @@ public class Memory {
 		if(durability > MaxDurability) 
 			durability = MaxDurability;
 		
-		SetDurability(block, durability);
+		SetDurability(block, durability, player);
 		return true; 
 	}
 	
-	public static void DecreaseDurability(Block block, int amount){
+	public static void DecreaseDurability(Block block, int amount, Player player){
 		int durability = GetDurability(block) - amount;
 		if(durability < 0) durability = 0; 
-		SetDurability(block, durability); 
+		SetDurability(block, durability, player); 
 	}
 
 	public static byte ToByte(byte[] data)
@@ -170,7 +178,7 @@ public class Memory {
 		ChunkSerializable protectedChunk = new ChunkSerializable(block); 
 		ProtectionBlockData data = Memory.ProtectorBlocks.get(protectedChunk);
 		if(data == null || !data.BoardName.equals(user.BoardName)){
-			DecreaseDurability(block, power); 
+			DecreaseDurability(block, power, player); 
 			int durability = GetDurability(block);
 			
 			if(durability > 0){
