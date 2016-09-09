@@ -187,9 +187,18 @@ public class BlockListener implements Listener {
         		return; 
         	
         	// only allow reinforcing protector blocks! 
-        	if(block.getType() != Memory.ProtectorBlock){
+        	if(block.getType() != Memory.ProtectorBlock)
         		return; 
-        	}
+        	
+        	// if no data exists, dont bother 
+        	ChunkSerializable cs = new ChunkSerializable(block); 
+        	ProtectionBlockData data = Memory.ProtectorBlocks.get(cs);
+        	if(data == null)
+        		return; 
+        	
+        	// if location is not right, dont bother 
+        	if(!data.Location.equals(new LocationSerializable(block)))
+        		return; 
         	
         	//if(block.getType() == Material.PISTON_EXTENSION || block.getType() == Material.PISTON_MOVING_PIECE)
         	//	return;
@@ -393,8 +402,11 @@ public class BlockListener implements Listener {
 			}
 		}
 		
-		// handle claims 
-		if(block.getType() == Material.REDSTONE_TORCH_ON || block.getType() == Material.REDSTONE_TORCH_OFF){
+		Block against = event.getBlockAgainst(); 
+		boolean againstIsProtector = against.getFace(block) == BlockFace.UP; 
+		
+		// handle claims (must be placed against the iron block) 
+		if(againstIsProtector && block.getType() == Material.REDSTONE_TORCH_ON || block.getType() == Material.REDSTONE_TORCH_OFF){
 			Block relative = block.getRelative(BlockFace.DOWN); 
 			if(relative.getType() != Memory.ProtectorBlock)
 				return; 
@@ -424,8 +436,9 @@ public class BlockListener implements Listener {
 			return; 
 		} 
 		
-		// handle claims if emerald is placed under redstone torch 
-		if(block.getType() == Memory.ProtectorBlock){
+		// handle claims if emerald is placed under redstone torch
+		// note: disabled by design 
+		/*if(block.getType() == Memory.ProtectorBlock){
 			Block relative = block.getRelative(BlockFace.UP); 
 			if(relative.getType() != Material.REDSTONE_TORCH_ON && relative.getType() != Material.REDSTONE_TORCH_OFF)
 				return;
@@ -453,7 +466,7 @@ public class BlockListener implements Listener {
 			
 			LightAPI.createLight(relative.getLocation(), 15, true); 
 			return; 
-		}
+		}*/
 		
 		// handle door claims 
 		if(IsDoor(block.getType())){

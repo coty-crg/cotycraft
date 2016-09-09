@@ -120,6 +120,9 @@ public class Memory {
 		if(data != null)
 			data.ProtectionLevel = value;
 		else{
+			if(player == null)
+				return; 
+			
 			User user = User.FromUUID(player.getUniqueId()); 
 			LocationSerializable ls = new LocationSerializable(block); 
 			ProtectionBlockData newData = new ProtectionBlockData(user.BoardName, ls);
@@ -174,10 +177,10 @@ public class Memory {
 		//((CraftPlayer)player).sendBlockChange(block.getLocation(), block.getType(), (byte)0);
 
 		// if our own block, don't lower durability 
-		User user = User.FromUUID(player.getUniqueId()); 
+		User user = player != null ? User.FromUUID(player.getUniqueId()) : null; 
 		ChunkSerializable protectedChunk = new ChunkSerializable(block); 
 		ProtectionBlockData data = Memory.ProtectorBlocks.get(protectedChunk);
-		if(data == null || !data.BoardName.equals(user.BoardName)){
+		if(data == null || user == null || !data.BoardName.equals(user.BoardName)){
 			DecreaseDurability(block, power, player); 
 			int durability = GetDurability(block);
 			
