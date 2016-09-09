@@ -2,6 +2,8 @@ package com.wanderingcorgi.minecraft;
 
 import java.io.Serializable;
 import java.util.UUID;
+
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -50,29 +52,33 @@ public class ChunkSerializable implements Serializable {
 
 	
 	public UUID WorldId; 
-	public double X, Y, Z; 
+	public int X, Y, Z; 
 	
-	public static int ChunkSize = 16; 
+	public static int ChunkSize = 32; 
 	
 	public ChunkSerializable(World world, double x, double y, double z){
 		WorldId = world.getUID();  
-		X = Math.round(x / ChunkSize) * ChunkSize;
-		Y = Math.round(y / ChunkSize) * ChunkSize;
-		Z = Math.round(z / ChunkSize) * ChunkSize;
+		Location location = new Location(world, x, y, z);
+		Chunk chunk = location.getChunk(); 
+		X = chunk.getX(); 
+		Y = (int) Math.round(y / ChunkSize) * ChunkSize;
+		Z = chunk.getZ(); 
 	}
 	
 	public ChunkSerializable(Location location){
 		WorldId = location.getWorld().getUID(); 
-		X = Math.round(location.getX() / ChunkSize) * ChunkSize;
-		Y = Math.round(location.getY() / ChunkSize) * ChunkSize;
-		Z = Math.round(location.getZ() / ChunkSize) * ChunkSize;
+		Chunk chunk = location.getChunk(); 
+		X = chunk.getX(); 
+		Y = (int) Math.round(location.getY() / ChunkSize) * ChunkSize;
+		Z = chunk.getZ(); 
 	}
 	
 	public ChunkSerializable(Block block){
 		Location location = block.getLocation(); 
 		WorldId = location.getWorld().getUID(); 
-		X = Math.round(location.getX() / ChunkSize) * ChunkSize; 
-		Y = Math.round(location.getY() / ChunkSize) * ChunkSize;
-		Z = Math.round(location.getZ() / ChunkSize) * ChunkSize;
+		Chunk chunk = location.getChunk(); 
+		X = chunk.getX(); 
+		Y = (int) Math.round(location.getY() / ChunkSize) * ChunkSize;
+		Z = chunk.getZ(); 
 	}
 }

@@ -60,9 +60,9 @@ public class BlockListener implements Listener {
 			}
 		}
 		
-		for(Block block : blocks){
-			Memory.Universe.remove(block); 
-		}
+		//for(Block block : blocks){
+		//	Memory.Universe.remove(block); 
+		//}
 	}
 	
 	@EventHandler
@@ -80,9 +80,9 @@ public class BlockListener implements Listener {
 			}
 		}
 		
-		for(Block block : blocks){
-			Memory.Universe.remove(block); 
-		}
+		//for(Block block : blocks){
+		//	Memory.Universe.remove(block); 
+		//}
 	}
 	
 	private static final List<Material> Tools = Arrays.asList( Material.AIR,
@@ -186,8 +186,13 @@ public class BlockListener implements Listener {
         	if(worth == 0)
         		return; 
         	
-        	if(block.getType() == Material.PISTON_EXTENSION || block.getType() == Material.PISTON_MOVING_PIECE)
-        		return;
+        	// only allow reinforcing protector blocks! 
+        	if(block.getType() != Memory.ProtectorBlock){
+        		return; 
+        	}
+        	
+        	//if(block.getType() == Material.PISTON_EXTENSION || block.getType() == Material.PISTON_MOVING_PIECE)
+        	//	return;
         	
         	if(!user.ReinforceMode){
             	player.sendMessage(String.format("§7[durability: %s] (+%s) To reinforce further, use /b reinforce and left click this block with a special item in hand.", Memory.GetDurability(block), worth));
@@ -250,8 +255,8 @@ public class BlockListener implements Listener {
 	
 	@EventHandler
 	public void OnBlockPhysicsEvent(BlockPhysicsEvent event){
-		Block block = event.getBlock();
-		Memory.Universe.remove(block); 
+		//Block block = event.getBlock();
+		//Memory.Universe.remove(block); 
 	}
 	
 	@EventHandler
@@ -273,10 +278,16 @@ public class BlockListener implements Listener {
 	
 	@EventHandler
 	public void onBlockBreakEvent(BlockBreakEvent event){
-		// Bukkit.getConsoleSender().sendMessage("Broke block at " + event.getBlock().getLocation().toString());
+		User user = User.FromUUID(event.getPlayer().getUniqueId()); 
 		
 		Block block = event.getBlock();
 		int durabilityLeft = Memory.GetDurability(block);
+		
+		// users can break their own blocks 
+		ChunkSerializable cs = new ChunkSerializable(block); 
+		ProtectionBlockData data = Memory.ProtectorBlocks.get(cs);
+		if(data != null && data.BoardName.equals(user.BoardName))
+			return; 
 		
 		if(durabilityLeft > Memory.MaxDurabilityUntilExplosionsRequired){
 			int tntOnlyDurabilityRemaining = durabilityLeft - Memory.MaxDurabilityUntilExplosionsRequired; 
@@ -370,7 +381,7 @@ public class BlockListener implements Listener {
 			return; 
 
 		User user = User.FromUUID(player.getUniqueId()); 
-		Memory.Universe.remove(new LocationSerializable(block.getLocation())); // revert dura to 0 
+		//Memory.Universe.remove(new LocationSerializable(block.getLocation())); // revert dura to 0 
 		
 		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
 		if(Memory.ProtectorBlocks.containsKey(thisChunk)){

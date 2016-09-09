@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -29,7 +30,7 @@ import ru.beykerykt.lightapi.LightAPI;
 public class Memory {
 	
 	// <location of block, durability of that block> 
-	protected static HashMap<LocationSerializable, Integer> Universe = new HashMap<LocationSerializable, Integer>(); 
+	//protected static HashMap<LocationSerializable, Integer> Universe = new HashMap<LocationSerializable, Integer>(); 
 	
 	// <location of bed, owner of bed> 
 	protected static HashMap<LocationSerializable, UUID> Beds = new HashMap<LocationSerializable, UUID>();
@@ -89,8 +90,11 @@ public class Memory {
 			targetBlock = blockBelow; 
 		}
 		
-		LocationSerializable ls = new LocationSerializable(targetBlock);
-    	Integer durability = Memory.Universe.getOrDefault(ls, 0);
+		ChunkSerializable cs = new ChunkSerializable(targetBlock); 
+		ProtectionBlockData data = Memory.ProtectorBlocks.get(cs); 
+		if(data == null) return 0; 
+		
+    	Integer durability = data.ProtectionLevel; 
     	return durability.intValue(); 
 	}
 	
@@ -101,8 +105,9 @@ public class Memory {
 			targetBlock = blockBelow; 
 		}
 		
-		LocationSerializable ls = new LocationSerializable(targetBlock); 
-		Memory.Universe.put(ls, value); 
+		ChunkSerializable cs = new ChunkSerializable(targetBlock); 
+		ProtectionBlockData data = Memory.ProtectorBlocks.get(cs); 
+		data.ProtectionLevel = value;  
 	}
 	
 	public static boolean IncreaseDurability(Block block, int amount){
@@ -205,6 +210,10 @@ public class Memory {
 				LocationSerializable ls2 = new LocationSerializable(bottomBlock.getLocation()); 
 				Memory.Doors.remove(ls2);
 			}
+			
+			Chunk chunk = player.getLocation().getChunk();
+			World world = player.getLocation().getWorld(); 
+			world.refreshChunk(chunk.getX(), chunk.getZ()); 
 		}
 		
 		return true;
@@ -212,7 +221,7 @@ public class Memory {
 	
 	public static void LoadFromDB() throws IOException, ClassNotFoundException {
 		createDirectories(); 
-		LoadWorldData();
+		//LoadWorldData();
 		LoadBoardsData(); 
 		LoadUserData(); 
 		LoadBedData(); 
@@ -285,14 +294,14 @@ public class Memory {
 	    }
 	}
 	
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	public static void LoadWorldData() throws IOException, ClassNotFoundException{
 		FileInputStream fileIn = new FileInputStream(Main.dataFolder + "/saves/Universe.sav");
         ObjectInputStream in = new ObjectInputStream(fileIn);
         Universe = ( HashMap<LocationSerializable, Integer> ) in.readObject();
         in.close();
         fileIn.close();
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	public static void LoadProtectorData() throws IOException, ClassNotFoundException{
@@ -350,7 +359,7 @@ public class Memory {
 	public static void SaveToDB() throws IOException {
 		createDirectories(); 
 		BackupData(); 
-		SaveWorldData();
+		//SaveWorldData();
 		SaveBoardData(); 
 		SaveUserData(); 
 		SaveBedData(); 
@@ -358,13 +367,13 @@ public class Memory {
 		SaveDoorData(); 
 	}
 	
-	public static void SaveWorldData() throws IOException{
+	/*public static void SaveWorldData() throws IOException{
 		FileOutputStream fileOut = new FileOutputStream(Main.dataFolder + "/saves/Universe.sav");
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(Universe);
         out.close();
         fileOut.close();
-	}
+	}*/
 	
 	public static void SaveProtectorData() throws IOException{
 		FileOutputStream fileOut = new FileOutputStream(Main.dataFolder + "/saves/ProtectorBlocks.sav");

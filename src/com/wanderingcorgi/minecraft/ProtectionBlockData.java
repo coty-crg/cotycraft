@@ -3,8 +3,10 @@ package com.wanderingcorgi.minecraft;
 import java.io.Serializable;
 
 public class ProtectionBlockData implements Serializable {
+	
 	public String BoardName; 
-	public LocationSerializable Location; 
+	public LocationSerializable Location;
+	public Integer ProtectionLevel = 0; 
 	
 	public ProtectionBlockData(String boardName, LocationSerializable location){
 		this.BoardName = boardName; 
@@ -17,6 +19,7 @@ public class ProtectionBlockData implements Serializable {
 		int result = 1;
 		result = prime * result + ((BoardName == null) ? 0 : BoardName.hashCode());
 		result = prime * result + ((Location == null) ? 0 : Location.hashCode());
+		result = prime * result + ((ProtectionLevel == null) ? 0 : ProtectionLevel.hashCode());
 		return result;
 	}
 
@@ -38,6 +41,11 @@ public class ProtectionBlockData implements Serializable {
 			if (other.Location != null)
 				return false;
 		} else if (!Location.equals(other.Location))
+			return false;
+		if (ProtectionLevel == null) {
+			if (other.ProtectionLevel != null)
+				return false;
+		} else if (!ProtectionLevel.equals(other.ProtectionLevel))
 			return false;
 		return true;
 	}
