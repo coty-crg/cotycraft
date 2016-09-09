@@ -300,9 +300,7 @@ public class BlockListener implements Listener {
 		if(actuallyBreak) 
 			return; 
 
-		if(durabilityLeft > 1)
-			event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft));
-		
+		event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft));
 		event.setCancelled(true);
 	}
 	
