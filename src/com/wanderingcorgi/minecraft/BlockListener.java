@@ -296,12 +296,12 @@ public class BlockListener implements Listener {
 			return; 
 		}
 		
-		if(durabilityLeft > 1)
-			event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft - 1));
-		
 		boolean actuallyBreak = Memory.BlockBroken(block, 1, event.getPlayer());
 		if(actuallyBreak) 
 			return; 
+
+		if(durabilityLeft > 1)
+			event.getPlayer().sendMessage(String.format("§7[durability: %s]", durabilityLeft));
 		
 		event.setCancelled(true);
 	}
