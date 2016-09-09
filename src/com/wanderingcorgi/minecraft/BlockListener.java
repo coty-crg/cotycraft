@@ -204,6 +204,12 @@ public class BlockListener implements Listener {
             		player.setItemInHand(null);
             	}
             	
+            	if(BlockListener.IsDoor(block.getType())){
+    				Memory.RefreshBlock(player, block); 
+    				Memory.RefreshBlock(player, block.getRelative(BlockFace.DOWN)); 
+    				Memory.RefreshBlock(player, block.getRelative(BlockFace.UP)); 				
+    			}
+            	
         		player.sendMessage(String.format("§7[durability: %s (+%s)]", Memory.GetDurability(block), worth));
         		event.setCancelled(true);
         	}else{

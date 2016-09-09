@@ -33,6 +33,10 @@ public class User implements Serializable {
 	public boolean ReinforceMode = false; 
 	public long LastTeleportMS = 0L; 
 	
+	public boolean TextFormatting = false; 
+	public boolean DropPlayerHeads = false; 
+	public boolean LightningOnSpawn = false; 
+	
 	public User(UUID id){
 		this.Id = id;
 		ChatMode = Chat.Global; 
@@ -101,15 +105,21 @@ public class User implements Serializable {
 		
 		return Relation.Neutral; 
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((BoardName == null) ? 0 : BoardName.hashCode());
 		result = prime * result + ((BoardRank == null) ? 0 : BoardRank.hashCode());
+		result = prime * result + ((ChatMode == null) ? 0 : ChatMode.hashCode());
+		result = prime * result + (DropPlayerHeads ? 1231 : 1237);
 		result = prime * result + ((Home == null) ? 0 : Home.hashCode());
 		result = prime * result + ((Id == null) ? 0 : Id.hashCode());
+		result = prime * result + (int) (LastTeleportMS ^ (LastTeleportMS >>> 32));
+		result = prime * result + (LightningOnSpawn ? 1231 : 1237);
+		result = prime * result + (ReinforceMode ? 1231 : 1237);
+		result = prime * result + (TextFormatting ? 1231 : 1237);
 		return result;
 	}
 
@@ -129,6 +139,10 @@ public class User implements Serializable {
 			return false;
 		if (BoardRank != other.BoardRank)
 			return false;
+		if (ChatMode != other.ChatMode)
+			return false;
+		if (DropPlayerHeads != other.DropPlayerHeads)
+			return false;
 		if (Home == null) {
 			if (other.Home != null)
 				return false;
@@ -139,7 +153,17 @@ public class User implements Serializable {
 				return false;
 		} else if (!Id.equals(other.Id))
 			return false;
+		if (LastTeleportMS != other.LastTeleportMS)
+			return false;
+		if (LightningOnSpawn != other.LightningOnSpawn)
+			return false;
+		if (ReinforceMode != other.ReinforceMode)
+			return false;
+		if (TextFormatting != other.TextFormatting)
+			return false;
 		return true;
 	}
+	
+
 }
 
