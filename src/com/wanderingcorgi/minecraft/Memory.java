@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,13 +23,20 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Door;
+
+import net.minecraft.server.v1_9_R2.*;
+
+import org.bukkit.craftbukkit.v1_9_R2.CraftChunk;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer; 
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 
 import com.google.common.io.Files;
 
-import ru.beykerykt.lightapi.LightAPI;
+import ru.beykerykt.lightapi.LightAPI; 
 
 public class Memory {
-	
+    
 	// <location of block, durability of that block> 
 	//protected static HashMap<LocationSerializable, Integer> Universe = new HashMap<LocationSerializable, Integer>(); 
 	
@@ -86,6 +94,7 @@ public class Memory {
 	public static int GetDurability(Block block){
 		Block targetBlock = block; 
 		Block blockBelow = block.getRelative(BlockFace.DOWN);
+		
 		if(BlockListener.IsDoor(targetBlock.getType()) && BlockListener.IsDoor(blockBelow.getType())){
 			targetBlock = blockBelow; 
 		}
@@ -128,14 +137,45 @@ public class Memory {
 		if(durability < 0) durability = 0; 
 		SetDurability(block, durability); 
 	}
+
+	public static byte ToByte(byte[] data)
+	{
+		byte c = 0;
+	    for (int i=0; i < data.length; ++i)
+	    	c |= data[i] << i;
+	    return c;
+	}
+	
+	public static void RefreshBlock(Player player, Block block){
+		Location location = block.getLocation(); 
+		Material material = block.getType(); 
+		BlockPosition blockPosition = new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(((CraftWorld) location.getWorld()).getHandle(), blockPosition);
+        byte data = block.getState().getRawData(); 
+        packet.block = net.minecraft.server.v1_9_R2.Block.getByCombinedId((material.getId() + (data << 12)));
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+	}
 	
 	// returns true if we really want to destroy the block 
 	public static boolean BlockBroken(Block block, int power, Player player){		
 		DecreaseDurability(block, power); 
 		int durability = GetDurability(block);
 		
-		if(durability > 0)
+		
+		// CraftChunk chunk = (CraftChunk) player.getLocation().getChunk(); 
+		//player.send
+		//((CraftPlayer)player).sendBlockChange(block.getLocation(), block.getType(), (byte)0);
+		
+		
+		if(durability > 0){
+			if(BlockListener.IsDoor(block.getType())){
+				RefreshBlock(player, block); 
+				RefreshBlock(player, block.getRelative(BlockFace.DOWN)); 
+				RefreshBlock(player, block.getRelative(BlockFace.UP)); 				
+			}
+			
 			return false; 
+		}
 		
 		Material blockType = block.getType(); 
 		
@@ -204,8 +244,7 @@ public class Memory {
 			LocationSerializable ls = new LocationSerializable(block.getLocation()); 
 			Memory.Doors.remove(ls);
 
-			Location top = block.getLocation(); 
-			Block bottomBlock = top.getWorld().getBlockAt((int) top.getX(),(int) top.getY() - 1,(int) top.getZ());
+			Block bottomBlock = block.getRelative(BlockFace.DOWN); 
 			if(BlockListener.IsDoor(bottomBlock.getType())){
 				LocationSerializable ls2 = new LocationSerializable(bottomBlock.getLocation()); 
 				Memory.Doors.remove(ls2);

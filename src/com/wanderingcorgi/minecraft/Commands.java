@@ -61,6 +61,29 @@ public class Commands implements CommandExecutor  {
 	 */
 	public void initialize(){
 
+		CommandList.add(new BoardCommand("allowtextformatting", "user", "[Admin] Enables text formatting for a user.", new MyCommand() {
+			@Override
+			public void run(CommandSender sender, Player player, String[] arguments) {
+				
+				if(!player.isOp()){
+					sender.sendMessage("§cYou are not an admin!");
+				}
+				
+				if(arguments.length == 1){
+            		sender.sendMessage("§cPlease specify a user! Example: /b allowtextformatting user");
+            		return; 
+            	}
+				
+            	String otherPlayerName = arguments[1]; 
+            	Player otherPlayer = Bukkit.getPlayer(otherPlayerName);
+				
+            	User otherUser = User.FromUUID(otherPlayer.getUniqueId()); 
+            	otherUser.TextFormatting = true;
+            	sender.sendMessage(String.format("%s can now use text formatting", otherPlayer.getDisplayName()));
+            	otherPlayer.sendMessage(String.format("You can now format text by prefixing a message with &code, like &cExample would print §cExample! Go crazy!", otherPlayer.getDisplayName()));
+			}
+		}));
+		
 		CommandList.add(new BoardCommand("create", "name", "Creates a new board. Name limit of 5 characters.", new MyCommand() {
 			@Override
             public void run(CommandSender sender, Player player, String[] arguments) {

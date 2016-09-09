@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -40,6 +41,8 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void OnPlayerBucketEvent(PlayerBucketEmptyEvent event){
 		Block block = event.getBlockClicked();
+		if(event.getBucket() == Material.BUCKET) return; // don't block empty buckets from picking up water
+		
 		ChunkSerializable thisChunk = new ChunkSerializable(block.getLocation()); 
 		if(Memory.ProtectorBlocks.containsKey(thisChunk)){
 			ProtectionBlockData protectionBlockData =  Memory.ProtectorBlocks.get(thisChunk); 
@@ -116,7 +119,9 @@ public class PlayerListener implements Listener {
 		User user = User.FromUUID(playerId); 
 		Board board = Board.FromName(user.BoardName); 
 		
-		String Message = event.getMessage().replace(">", "§a>");; 
+		String Message = event.getMessage().replace(">", "§a>");
+		if(user.TextFormatting)
+			Message = event.getMessage().replaceAll("&", "§");
 
 		Set<Player> listeners = event.getRecipients();
 		
@@ -170,6 +175,9 @@ public class PlayerListener implements Listener {
 				
 				if(user.ChatMode == Chat.Local){
 					Location listenerLocation = listener.getLocation(); // uses a sqrt, so its slow 
+					if(!playerLocation.getWorld().equals(listenerLocation))
+						continue;
+					
 					if(playerLocation.distance(listenerLocation) > 80)
 						continue; 
 					
