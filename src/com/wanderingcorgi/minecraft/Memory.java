@@ -121,15 +121,6 @@ public class Memory {
 		
 		if(data != null)
 			data.ProtectionLevel = value;
-		else{
-			if(player == null)
-				return; 
-			
-			User user = User.FromUUID(player.getUniqueId()); 
-			LocationSerializable ls = new LocationSerializable(block); 
-			ProtectionBlockData newData = new ProtectionBlockData(user.BoardName, ls);
-			Memory.ProtectorBlocks.put(cs, newData); 
-		}
 	}
 	
 	public static boolean IncreaseDurability(Block block, int amount, Player player){
