@@ -204,7 +204,7 @@ public class BlockListener implements Listener {
         	//	return;
         	
         	if(!user.ReinforceMode){
-            	player.sendMessage(String.format("§7[durability: %s] (+%s) To reinforce further, use /b reinforce and left click this block with a special item in hand.", Memory.GetDurability(block), worth));
+            	player.sendMessage(String.format("§7[durability: %s] (+%s) To reinforce further, use /b reinforce and fondle this block with a §bspecial§7 item in hand. ;3", Memory.GetDurability(block), worth));
         		return; 
         	}
         	
@@ -227,7 +227,7 @@ public class BlockListener implements Listener {
         		player.sendMessage(String.format("§7[durability: %s (+%s)]", Memory.GetDurability(block), worth));
         		event.setCancelled(true);
         	}else{
-        		player.sendMessage(String.format("§7[durability: %s (MAX DURABILITY)]", Memory.GetDurability(block)));
+        		player.sendMessage(String.format("§7[durability: %s (§bo shit waddup§7)]", Memory.GetDurability(block)));
         		event.setCancelled(true);
         	}
         }
@@ -261,7 +261,7 @@ public class BlockListener implements Listener {
         	}
         		
         	if(user == null || user.BoardName == null || !user.BoardName.equals(doorBoardOwner)){
-        		player.sendMessage(String.format("/%s/ owns this door! You must destroy it to pass.", doorBoardOwner));
+        		player.sendMessage(String.format("Some plebs named /%s/ own this door. You gotta destroy it to pass.", doorBoardOwner));
         		event.setCancelled(true);
         		return; 
         	}
@@ -300,7 +300,7 @@ public class BlockListener implements Listener {
 		
 		if(durabilityLeft > Memory.MaxDurabilityUntilExplosionsRequired){
 			int tntOnlyDurabilityRemaining = durabilityLeft - Memory.MaxDurabilityUntilExplosionsRequired; 
-			event.getPlayer().sendMessage(String.format("§c[Explosions required for another %s durability]", tntOnlyDurabilityRemaining));
+			event.getPlayer().sendMessage(String.format("§c[Explosions required for another %s durability - these guys are some real autismos so you better fight fire with fire.]", tntOnlyDurabilityRemaining));
 			event.setCancelled(true);
 			return; 
 		}
@@ -396,7 +396,7 @@ public class BlockListener implements Listener {
 			String ownerBoardName = protectionBlockData.BoardName; 		
 			if(user.BoardName == null || !user.BoardName.equals(ownerBoardName)){
 				String relationColor = RelationColor.FromRelation(user.GetRelation(ownerBoardName)); 
-				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! Chunk protected by: %s/%s/", relationColor, ownerBoardName));
+				player.sendMessage(String.format("This area is protected by %s/%s/ or some shit idk", relationColor, ownerBoardName));
 				event.setCancelled(true);
 				return; 
 			}
@@ -412,7 +412,7 @@ public class BlockListener implements Listener {
 				return; 
 			
 			if(!user.HasBoard()){
-				player.sendMessage("You need to join a /board/ before you can create this");
+				player.sendMessage("Nig nog you need to join or create a /board/ before you can claim land");
 				event.setCancelled(true);
 				return; 
 			}
@@ -421,12 +421,12 @@ public class BlockListener implements Listener {
 			
 			boolean exists = Memory.ProtectorBlocks.containsKey(cs);
 			if(exists){
-				player.sendMessage("There is already a protector rune in this chunk!");
+				player.sendMessage("Hey you fucking autist, there is already a protector rune in this chunk!");
 				event.setCancelled(true);
 				return;
 			}
 
-			player.sendMessage("Protector rune has been activated!");
+			player.sendMessage("here come dat boi");
 			
 			LocationSerializable ls = new LocationSerializable(relative.getLocation()); 
 			ProtectionBlockData protectionBlockData = new ProtectionBlockData(user.BoardName, ls);  

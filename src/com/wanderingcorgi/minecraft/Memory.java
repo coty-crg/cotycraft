@@ -253,7 +253,7 @@ public class Memory {
 				Memory.ProtectorBlocks.remove(cs); 
 				LightAPI.deleteLight(protectorBlock.getLocation(), true); 
 				if(player != null)
-					player.sendMessage(String.format("Removed protection rune!"));
+					player.sendMessage(String.format("Took care of that fucking problem."));
 				return true; 
 			}
 		}

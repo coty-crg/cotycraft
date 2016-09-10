@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
 			User user = User.FromUUID(player.getUniqueId()); 
 			if(user.BoardName == null || !user.BoardName.equals(ownerBoardName)){
 				String relationColor = RelationColor.FromRelation(user.GetRelation(ownerBoardName)); 
-				player.sendMessage(String.format("Cannot place blocks in this chunk until protector is destroyed! Chunk protected by: %s/%s/", relationColor, ownerBoardName));
+				player.sendMessage(String.format("Cannot use buckets in this chunk until that fucking protector is destroyed. Chunk protected these fags: %s/%s/", relationColor, ownerBoardName));
 				event.setCancelled(true);
 			}
 			
@@ -93,12 +93,15 @@ public class PlayerListener implements Listener {
 	    if(!Memory.Users.containsKey(playerId)){
 	    	User user = new User(playerId);
 	    	Memory.Users.put(playerId, user); 	    
+		    player.sendMessage("§aWelcome to 4craft §fv9.11§a, where fun is a buzzword and everyone's an autist. Use §b/b help§a or get the fuck out.");
 	    	return;
 	    } 
 
 	    User user = User.FromUUID(playerId); 
 	    if(user.HasBoard())
 	    	player.setPlayerListName( String.format("/%s/%s", user.BoardName, player.getDisplayName()) );
+	    
+	    player.sendMessage("§aWelcome to 4craft §fv9.11§a, where fun is a buzzword and everyone's an autist. Use §b/b help§a or get the fuck out.");
 	}
 
 	private final String BoardChatPrefix = String.format("%s[board]", RelationColor.Faction); 
@@ -234,7 +237,7 @@ public class PlayerListener implements Listener {
 			
 			if(user.BoardName.equals(otherUser.BoardName)){
 				Player player = Bukkit.getPlayer(playerId);
-				otherPlayer.sendMessage(String.format("[§7%s is in your board!]", player.getDisplayName()));
+				otherPlayer.sendMessage(String.format("[§7%s is your fucking friend!]", player.getDisplayName()));
 				event.setCancelled(true);
 				return; 
 			}
@@ -262,7 +265,7 @@ public class PlayerListener implements Listener {
 		if(user.BoardName.equals(otherUser.BoardName)){
 			Player player = Bukkit.getPlayer(playerId);
 			Player otherPlayer = Bukkit.getPlayer(otherPlayerId);
-			otherPlayer.sendMessage(String.format("[§7%s is in your board!]", player.getDisplayName()));
+			otherPlayer.sendMessage(String.format("[§7%s is your friend you fucking mongoloid]", player.getDisplayName()));
 			event.setCancelled(true);
 			return; 
 		}
