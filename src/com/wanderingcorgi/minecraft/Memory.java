@@ -84,12 +84,13 @@ public class Memory {
 			put(Material.WOOL, 2); 
 		}
 	}; 
-	
+
 	public static final Material ProtectorBlock = Material.IRON_BLOCK; 
+	public static final Material HomeBlock = Material.GOLD_BLOCK; 
 	public static final int MaxDurability = 1280;
 	public static final int MaxDurabilityUntilExplosionsRequired = 640; 
 	public static final long BedTeleportCooldownSeconds = 60; 
-	public static final long HomeTeleportCooldownSeconds = 60 * 60;
+	public static final long HomeTeleportCooldownSeconds = 60;
 	
 	public static int GetDurability(Block block){
 		Block targetBlock = block; 

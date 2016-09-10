@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -429,7 +430,7 @@ public class Commands implements CommandExecutor  {
 			}
 		}));
 		
-		CommandList.add(new BoardCommand("sethome", "", "While looking at a bed, sets your board's home. If your board's bed is destroyed or moved, the home will be lost.", new MyCommand() {
+		CommandList.add(new BoardCommand("sethome", "", "While looking at a home rune's bottom gold block, this command sets your board's home. If your board's home rune is destroyed or moved, the home will be lost. A Home rune is constructed (top to bottom) by a Gold Block -> Air -> Air -> Air -> Gold Block.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
 				
@@ -446,20 +447,29 @@ public class Commands implements CommandExecutor  {
             	}
             	
             	Set<Material> IgnoreBlocks = null; 
-            	Block targetBlock = player.getTargetBlock(IgnoreBlocks, 10);
+            	Block homeBottom = player.getTargetBlock(IgnoreBlocks, 10);
+            	Block airBottom = homeBottom.getRelative(BlockFace.UP);
+            	Block airMid = airBottom.getRelative(BlockFace.UP);
+            	Block airTop = airMid.getRelative(BlockFace.UP);
+            	Block homeTop = airTop.getRelative(BlockFace.UP);
             	
-            	if(targetBlock.getType() != Material.BED_BLOCK){
-            		sender.sendMessage("§cThis is not a bed!!");
+            	if(homeBottom.getType() != Memory.HomeBlock
+        			||airBottom.getType() != Material.AIR 
+        			|| airMid.getType() != Material.AIR 
+        			|| airTop.getType() != Material.AIR 
+        			|| homeTop.getType() != Memory.HomeBlock){
+            		sender.sendMessage(String.format("§cThis is not a %s", Memory.HomeBlock.toString()));
             		return; 
             	}
             	
             	Board board = Board.FromName(user.BoardName); 
-            	board.Home = new LocationSerializable(targetBlock.getLocation()); 
+            	board.Home = new LocationSerializable(homeBottom.getLocation()); 
         		sender.sendMessage("§aThis bed is now your board's home!");
 			}
 		}));
 		
-		CommandList.add(new BoardCommand("bed", "", "Sleeping in a bed will set your personal home. Using this command will teleport you to your bed. Note: this is different than the board's home bed.", new MyCommand() {
+		// disabled by design 
+		/*CommandList.add(new BoardCommand("bed", "", "Sleeping in a bed will set your personal home. Using this command will teleport you to your bed. Note: this is different than the board's home bed.", new MyCommand() {
 			@Override
 			public void run(CommandSender sender, Player player, String[] arguments) {
             	
@@ -490,7 +500,7 @@ public class Commands implements CommandExecutor  {
         		sender.sendMessage("§aTeleported to your bed!");
         		user.LastTeleportMS = System.currentTimeMillis(); 
 			}
-		}));
+		}));*/
 		
 		CommandList.add(new BoardCommand("home", "", "Teleports you to your board's home bed. Note: this is different than your personal bed.", new MyCommand() {
 			@Override
@@ -501,7 +511,7 @@ public class Commands implements CommandExecutor  {
             	long secondsSinceLastTp = System.currentTimeMillis() / 1000 - user.LastTeleportMS / 1000; 
 				long secondsRemaining = Memory.HomeTeleportCooldownSeconds - secondsSinceLastTp; 
 				if(secondsRemaining > 0){
-            		sender.sendMessage(String.format("You must wait %s minutes before you can teleport to your board's home!", secondsRemaining / 60));
+            		sender.sendMessage(String.format("You must wait %s seconds before you can teleport to your board's home!", secondsRemaining));
             		return; 
 				}
             	
@@ -519,21 +529,21 @@ public class Commands implements CommandExecutor  {
             	
             	Block block = player.getWorld().getBlockAt((int) board.Home.X, (int) board.Home.Y, (int) board.Home.Z); 
             	
-            	if(block.getType() != Material.BED_BLOCK){
+            	if(block.getType() != Memory.HomeBlock){
             		sender.sendMessage("§cYour board's home has been destroyed!!");
             		return; 
             	}
             	
             	Location bed = LocationSerializable.FromLoctionSerializable(board.Home); 
-            	Location aboveBed1 = new Location(bed.getWorld(), bed.getX(), bed.getY() + 1, bed.getZ()); 
-            	Location aboveBed2 = new Location(bed.getWorld(), bed.getX(), bed.getY() + 2, bed.getZ()); 
+            	Location aboveHome1 = new Location(bed.getWorld(), bed.getX(), bed.getY() + 1, bed.getZ()); 
+            	Location aboveHome2 = new Location(bed.getWorld(), bed.getX(), bed.getY() + 2, bed.getZ()); 
             	
-            	if(aboveBed1.getBlock().getType().isSolid() || aboveBed2.getBlock().getType().isSolid()){
+            	if(aboveHome1.getBlock().getType().isSolid() || aboveHome2.getBlock().getType().isSolid()){
             		sender.sendMessage("§cYour board's home is blocked!");
             		return; 
             	}
             	
-            	player.teleport(aboveBed1); 
+            	player.teleport(aboveHome1); 
         		sender.sendMessage("§aTeleported to your board's home!");
         		user.LastTeleportMS = System.currentTimeMillis(); 
 			}

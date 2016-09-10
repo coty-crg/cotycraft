@@ -228,7 +228,8 @@ public class PlayerListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	// beds disabled by design 
+	/*@EventHandler
 	public void OnBedEnterEvent(PlayerBedEnterEvent event){
 		Location bedLocation = event.getBed().getLocation(); 
 		LocationSerializable ls = new LocationSerializable(bedLocation); 
@@ -247,7 +248,7 @@ public class PlayerListener implements Listener {
 			Memory.Beds.put(ls, playerId); 
 			player.sendMessage("Claimed bed!");
 		}
-	}
+	}*/
 	
 	@EventHandler
 	public void onNameTag(AsyncPlayerReceiveNameTagEvent event) {
