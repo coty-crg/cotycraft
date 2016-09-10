@@ -458,7 +458,7 @@ public class Commands implements CommandExecutor  {
         			|| airMid.getType() != Material.AIR 
         			|| airTop.getType() != Material.AIR 
         			|| homeTop.getType() != Memory.HomeBlock){
-            		sender.sendMessage(String.format("§cThis is not a %s", Memory.HomeBlock.toString()));
+            		sender.sendMessage(String.format("§cThis is not a §bHome Rune§c! (From top to bottom: Gold, Air, Air, Gold; use this command on the bottom Gold Block)"));
             		return; 
             	}
             	
