@@ -294,11 +294,14 @@ public class BlockListener implements Listener {
 	@EventHandler
 	public void onBlockBreakEvent(BlockBreakEvent event){
 		User user = User.FromUUID(event.getPlayer().getUniqueId()); 
+		Block block = event.getBlock();		
 		
-		Block block = event.getBlock();
+		ChunkSerializable cs = new ChunkSerializable(block); 
+		ProtectionBlockData data = Memory.ProtectorBlocks.get(cs);
+		boolean userBelongsToFaction = data != null && data.BoardName != null && data.BoardName.equals(user.BoardName); 
+		
 		int durabilityLeft = Memory.GetDurability(block);
-		
-		if(durabilityLeft > Memory.MaxDurabilityUntilExplosionsRequired){
+		if(!userBelongsToFaction && durabilityLeft > Memory.MaxDurabilityUntilExplosionsRequired){
 			int tntOnlyDurabilityRemaining = durabilityLeft - Memory.MaxDurabilityUntilExplosionsRequired; 
 			event.getPlayer().sendMessage(String.format("§c[Explosions required for another %s durability - these guys are some real autismos so you better fight fire with fire.]", tntOnlyDurabilityRemaining));
 			event.setCancelled(true);

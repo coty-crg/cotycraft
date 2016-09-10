@@ -32,6 +32,7 @@ public class User implements Serializable {
 	public Chat ChatMode; 
 	public boolean ReinforceMode = false; 
 	public long LastTeleportMS = 0L; 
+	public long LastDurabilityDecreasedMS = 0L; 
 	
 	public boolean TextFormatting = false; 
 	public boolean DropPlayerHeads = false; 

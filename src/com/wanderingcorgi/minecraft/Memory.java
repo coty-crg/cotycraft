@@ -91,6 +91,7 @@ public class Memory {
 	public static final int MaxDurabilityUntilExplosionsRequired = 640; 
 	public static final long BedTeleportCooldownSeconds = 60; 
 	public static final long HomeTeleportCooldownSeconds = 60;
+	public static final long DurabilityDecreaseCooldownSeconds = 1; 
 	
 	public static int GetDurability(Block block){
 		Block targetBlock = block; 
@@ -145,9 +146,20 @@ public class Memory {
 	}
 	
 	public static void DecreaseDurability(Block block, int amount, Player player){
+		User user = User.FromUUID(player.getUniqueId());  
+    	long secondsSinceLastDurabilityDecrease = System.currentTimeMillis() / 1000 - user.LastDurabilityDecreasedMS / 1000; 
+		long secondsRemaining = Memory.DurabilityDecreaseCooldownSeconds - secondsSinceLastDurabilityDecrease; 
+		if(secondsRemaining > 0) return; // silently dont decrease durability 
+		
 		int durability = GetDurability(block) - amount;
 		if(durability < 0) durability = 0; 
-		SetDurability(block, durability, player); 
+		SetDurability(block, durability, player);
+		
+		user.LastDurabilityDecreasedMS = System.currentTimeMillis();
+		org.bukkit.inventory.ItemStack itemStack = player.getItemInHand();
+		short newDurability = (short) (itemStack.getDurability() +  1); 
+		itemStack.setDurability(newDurability);
+		player.updateInventory();
 	}
 
 	public static byte ToByte(byte[] data)
