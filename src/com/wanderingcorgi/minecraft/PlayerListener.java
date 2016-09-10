@@ -226,6 +226,9 @@ public class PlayerListener implements Listener {
 			event.setCancelled(true);
 			return; 
 		}
+
+		user.LastTeleportMS = System.currentTimeMillis(); 
+		otherUser.LastTeleportMS = System.currentTimeMillis(); 
 	}
 	
 	// beds disabled by design 
