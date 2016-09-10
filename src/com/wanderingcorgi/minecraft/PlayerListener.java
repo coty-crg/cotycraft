@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,6 +23,7 @@ import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.projectiles.ProjectileSource;
 import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
 
 import com.wanderingcorgi.minecraft.User.Chat;
@@ -205,7 +207,45 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void OnEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
-		if( !(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player))  
+		if(!(event.getEntity() instanceof Player))
+			return; 
+		
+		if(event.getDamager() instanceof Arrow){
+			
+			Arrow arrow = (Arrow) event.getDamager(); 
+			ProjectileSource arrowSource = arrow.getShooter();
+			Player otherPlayer = null; 
+			if(arrowSource instanceof Player)
+				otherPlayer = (Player) arrowSource; 
+			
+			if(otherPlayer == null) return; 
+			
+			UUID playerId = event.getEntity().getUniqueId(); 
+			UUID otherPlayerId = otherPlayer.getUniqueId(); 
+			
+			if(playerId == null || otherPlayerId == null)
+				return; 
+			
+			User user = User.FromUUID(playerId);
+			User otherUser = User.FromUUID(otherPlayerId); 
+			
+			if(user == null || otherUser == null || user.BoardName == null || otherUser.BoardName == null)
+				return; 
+			
+			if(user.BoardName.equals(otherUser.BoardName)){
+				Player player = Bukkit.getPlayer(playerId);
+				otherPlayer.sendMessage(String.format("[§7%s is in your board!]", player.getDisplayName()));
+				event.setCancelled(true);
+				return; 
+			}
+
+			user.LastTeleportMS = System.currentTimeMillis(); 
+			otherUser.LastTeleportMS = System.currentTimeMillis(); 
+			
+			return; 
+		}
+		
+		if(!(event.getDamager() instanceof Player))  
 			return; 
 		
 		UUID playerId = event.getEntity().getUniqueId(); 
